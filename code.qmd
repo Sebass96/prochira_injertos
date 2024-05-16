@@ -1,0 +1,35 @@
+---
+title: "Título de ka vestigación"
+author: Sebastian; Flavio Lozano-Isla
+format:
+  html:
+    toc: true
+    toc-location: left
+    number-sections: true
+    self-contained: true
+    output-file: "ESM_1"
+editor_options: 
+  chunk_output_type: console
+execute: 
+  warning: false
+  echo: true
+---
+
+# Setup
+
+```{r}
+#| label:  setup
+
+library(emmeans) 
+library(multcomp)
+source('https://inkaverse.com/setup.r')
+
+session_info()
+```
+
+# Importar datos
+
+```{r}
+
+```
+
