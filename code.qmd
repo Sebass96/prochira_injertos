@@ -29,6 +29,8 @@ session_info()
 
 # Importar datos
 
+- Tranformar la base de datos a hoja de calculo de google
+
 ```{r}
 
 ```
