@@ -1,6 +1,6 @@
 ---
-title: "Injertos Intermedios"
-author: Sebastian; Flavio Lozano-Isla
+title: "Estudio del injerto intermedio sobre el crecimiento y productividad del mango (Mangífera indica L.) var.Kent.en el Valle de San Lorenzo"
+author: Sebastian Casas; Flavio Lozano-Isla
 format:
   html:
     toc: true
@@ -29,7 +29,8 @@ session_info()
 
 # Importar datos
 
-- Tranformar la base de datos a hoja de calculo de google
+- Tranformar la base de datos a hoja de calculo de google 
+- verificar
 
 ```{r}
 
