@@ -29,10 +29,95 @@ session_info()
 
 # Importar datos
 
-- Tranformar la base de datos a hoja de calculo de google 
-- verificar
 
 ```{r}
+url <- "https://docs.google.com/spreadsheets/d/1E_cUmiRFoPLGAj7AQC6HZBD6hXtqzg2UHPvtWr2QR_U/edit#gid=2112492836"
 
+gs <- url %>% 
+  as_sheets_id()
+
+ley <- gs %>% 
+  range_read("leyenda") %>% 
+  rename(tratamientos = TRATAM) %>% 
+  rename_with(~ tolower(.))
+
+rdt <- gs %>% 
+  range_read("db") %>% 
+  merge(., ley, ) %>% 
+  select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
+  rename(treat = tratamientos
+         , n_treat = n_trat
+         , block = bloque
+         , n_plant = n_planta
+         , height = alt_planta
+         , n_fruits = n_frutos
+         , flowering = per_floracion
+         , sproud = per_brote
+         , scion = yema
+         , stock = patron
+         , edge = puente
+         ) %>% 
+  dplyr::arrange(year, n, treat) %>% 
+  mutate(across(year:n_plant, ~ as.factor(.)))
+  
+fru <-  gs %>% 
+  range_read("db_frutos")
 ```
+
+# Data summary
+
+```{r}
+sm <- rdt %>% 
+  group_by(year, treat) %>% 
+  summarise(across(height:sproud, ~ sum(!is.na(.))))
+```
+
+# Plant height
+
+```{r}
+model <- rdt %>% 
+  lm(height  ~ block + treat, .)
+
+plot_diag(model) %>% 
+  plot_grid(plotlist = ., ncol = 2)
+
+rdt %>% 
+  plot_raw(x = "treat", y = "height")
+
+anova(model)
+
+mc <- emmeans(model, ~ treat) %>% 
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(.group, trimws))
+
+mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+  pluck("groups") %>% 
+  rownames_to_column("treat")
+
+mc %>% 
+  plot_smr(x = "treat"
+           , y = "height"
+           , sig = "groups"
+           , ylimits = c(0, 6, 1)
+           )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
