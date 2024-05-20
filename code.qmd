@@ -102,6 +102,35 @@ mc %>%
            )
 ```
 
+# Plant sproud
+
+```{r}
+model_2 <- rdt %>% 
+  lm(sproud  ~ block + treat, .)
+
+plot_diag(model_2) %>% 
+  plot_grid(plotlist = ., ncol = 2)
+
+rdt %>% 
+  plot_raw(x = "treat", y = "sproud")
+
+anova(model_2)
+
+mc_2 <- emmeans(model_2, ~ treat) %>% 
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(.group, trimws))
+
+mc_2 <- agricolae::duncan.test(model_2, trt = c("treat")) %>% 
+  pluck("groups") %>% 
+  rownames_to_column("treat")
+
+mc_2 %>% 
+  plot_smr(x = "treat"
+           , y = "sproud"
+           , sig = "groups"
+           , ylimits = c(0, 80, 10)
+           )
+```
 
 
 
