@@ -29,7 +29,6 @@ session_info()
 
 # Importar datos
 
-
 ```{r}
 url <- "https://docs.google.com/spreadsheets/d/1E_cUmiRFoPLGAj7AQC6HZBD6hXtqzg2UHPvtWr2QR_U/edit#gid=2112492836"
 
@@ -71,6 +70,12 @@ sm <- rdt %>%
   group_by(year, treat) %>% 
   summarise(across(height:sproud, ~ sum(!is.na(.))))
 ```
+
+# Objetivos
+
+- Determinar las caracteristicas agronómicas por tipo de injerto intermedio para las variables alt_planta	n_frutos	per_floracion
+
+- Evaluar la calidad del fruto por tipo de injerto intermedio
 
 # Plant height
 
