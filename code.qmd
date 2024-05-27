@@ -77,7 +77,10 @@ sm <- rdt %>%
 
 - Evaluar la calidad del fruto por tipo de injerto intermedio
 
-# Plant height
+
+# Obj. 1
+
+## Plant height
 
 ```{r}
 model <- rdt %>% 
@@ -99,15 +102,20 @@ mc <- agricolae::duncan.test(model, trt = c("treat")) %>%
   pluck("groups") %>% 
   rownames_to_column("treat")
 
-mc %>% 
+p1 <- mc %>% 
   plot_smr(x = "treat"
            , y = "height"
            , sig = "groups"
            , ylimits = c(0, 6, 1)
+           , legend = "none"
+           , ylab = "Plant height (m)"
+           , xlab = "Treatment"
            )
+
+p1
 ```
 
-# Plant sproud
+## Plant sproud
 
 ```{r}
 model <- rdt %>% 
@@ -129,15 +137,19 @@ mc <- agricolae::duncan.test(model, trt = c("treat")) %>%
   pluck("groups") %>% 
   rownames_to_column("treat")
 
-mc %>% 
+p2 <- mc %>% 
   plot_smr(x = "treat"
            , y = "sproud"
            , sig = "groups"
-           , ylimits = c(0, 80, 10)
+           , ylimits = c(0, 90, 10)
+           , legend = "none"
+           , ylab = "Sproud ('%')"
+           , xlab = "Treatment"
            )
+p2
 ```
 
-# Number of fruits
+## Number of fruits
 
 ```{r}
 model <- rdt %>% 
@@ -147,7 +159,7 @@ plot_diag(model) %>%
   plot_grid(plotlist = ., ncol = 2)
 
 rdt %>% 
-  plot_raw(x = "treat", y = "n_fruits", group = "year")
+  plot_raw(x = "treat", y = "n_fruits")
 
 anova(model)
 
@@ -156,18 +168,16 @@ mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>%
   rownames_to_column("treat") %>% 
   separate(treat, c("treat", "year"))
 
-mc %>% 
+p3 <- mc %>% 
   plot_smr(x = "treat"
            , y = "n_fruits"
            , group = "year"
            , sig = "groups"
            , ylimits = c(0, 250, 50)
            )
-
-
 ```
 
-# Flowering
+## Flowering
 
 ```{r}
 model <- rdt %>% 
@@ -186,18 +196,64 @@ mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>%
   rownames_to_column("treat") %>% 
   separate(treat, c("treat", "year"))
 
-mc %>% 
+p4 <- mc %>% 
   plot_smr(x = "treat"
            , y = "flowering"
            , group = "year"
            , sig = "groups"
            , ylimits = c(0, 100, 20)
            )
+```
+
+## Figura 1
+
+```{r}
+list(p1, p2, p3, p4) %>% 
+  plot_grid(plotlist = ., ncol = 2
+            , labels = "auto"
+            ) %>% 
+  ggsave(plot = ., "files/Fig-1.jpg", units = "cm"
+         , width = 25, height = 18)
+
 
 ```
 
+## Multivariate
+
+```{r}
+mv <- rdt %>% 
+  group_by(treat) %>% 
+  summarise(across(where(is.numeric), ~ mean(., na.rm = T)))
+  
+
+pca <- mv %>% 
+  PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
+f2a <- plot.PCA(x = pca, choix = "var")
+f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
+
+list(f2a, f2b) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = "auto"
+              ) %>% 
+  ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
+         , width = 30, height = 15)
+
+```
+
+```{r}
+mv %>% 
+  select(where(is.numeric)) %>% 
+  pairs.panels(.
+             , pch = 21
+             , method = "pearson"
+             , stars = T
+             , scale = F
+             , lm = T
+             ) 
+```
+
+# Obj. 2
 
 
 
