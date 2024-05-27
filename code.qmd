@@ -86,9 +86,9 @@ rdt %>%
 
 anova(model)
 
-mc <- emmeans(model, ~ treat) %>% 
-  cld(Letters = letters, reversed = T) %>% 
-  mutate(across(.group, trimws))
+# mc <- emmeans(model, ~ treat) %>% 
+#   cld(Letters = letters, reversed = T) %>% 
+#   mutate(across(.group, trimws))
 
 mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
   pluck("groups") %>% 
@@ -105,26 +105,26 @@ mc %>%
 # Plant sproud
 
 ```{r}
-model_2 <- rdt %>% 
+model <- rdt %>% 
   lm(sproud  ~ block + treat, .)
 
-plot_diag(model_2) %>% 
+plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 rdt %>% 
   plot_raw(x = "treat", y = "sproud")
 
-anova(model_2)
+anova(model)
 
-mc_2 <- emmeans(model_2, ~ treat) %>% 
-  cld(Letters = letters, reversed = T) %>% 
-  mutate(across(.group, trimws))
+# mc_2 <- emmeans(model, ~ treat) %>% 
+#   cld(Letters = letters, reversed = T) %>% 
+#   mutate(across(.group, trimws))
 
-mc_2 <- agricolae::duncan.test(model_2, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
   pluck("groups") %>% 
   rownames_to_column("treat")
 
-mc_2 %>% 
+mc %>% 
   plot_smr(x = "treat"
            , y = "sproud"
            , sig = "groups"
@@ -135,81 +135,60 @@ mc_2 %>%
 # Number of fruits
 
 ```{r}
-model_3 <- rdt %>% 
+model <- rdt %>% 
   lm(n_fruits  ~ block + treat + year + treat:year, .)
 
-plot_diag(model_3) %>% 
+plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 rdt %>% 
-  plot_raw(x = "treat", y = "n_fruits")
+  plot_raw(x = "treat", y = "n_fruits", group = "year")
 
-rdt %>% 
-  plot_raw(x = "year", y = "n_fruits")
+anova(model)
 
-anova(model_3)
-
-mc_3 <- agricolae::duncan.test(model_3, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat") %>% 
+  separate(treat, c("treat", "year"))
 
-mc_3 %>% 
+mc %>% 
   plot_smr(x = "treat"
            , y = "n_fruits"
+           , group = "year"
            , sig = "groups"
            , ylimits = c(0, 250, 50)
            )
 
-mc_3 <- agricolae::duncan.test(model_3, trt = c("year")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("year")
 
-mc_3 %>% 
-  plot_smr(x = "year"
-           , y = "n_fruits"
-           , sig = "groups"
-           , ylimits = c(0, 250, 50)
-           )
 ```
 
 # Flowering
 
 ```{r}
-model_4 <- rdt %>% 
+model <- rdt %>% 
   lm(flowering  ~ block + treat + year + treat:year, .)
 
-plot_diag(model_4) %>% 
+plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 rdt %>% 
-  plot_raw(x = "treat", y = "flowering")
+  plot_raw(x = "treat", y = "flowering", group = "year")
 
-rdt %>% 
-  plot_raw(x = "year", y = "flowering")
+anova(model)
 
-anova(model_4)
-
-mc_4 <- agricolae::duncan.test(model_4, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat") %>% 
+  separate(treat, c("treat", "year"))
 
-mc_4 %>% 
+mc %>% 
   plot_smr(x = "treat"
            , y = "flowering"
+           , group = "year"
            , sig = "groups"
            , ylimits = c(0, 100, 20)
            )
 
-mc_4 <- agricolae::duncan.test(model_4, trt = c("year")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("year")
-
-mc_4 %>% 
-  plot_smr(x = "year"
-           , y = "flowering"
-           , sig = "groups"
-           , ylimits = c(0, 100, 20)
-           )
 ```
 
 
