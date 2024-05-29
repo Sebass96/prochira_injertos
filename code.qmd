@@ -60,7 +60,27 @@ rdt <- gs %>%
   mutate(across(year:n_plant, ~ as.factor(.)))
   
 fru <-  gs %>% 
-  range_read("db_frutos")
+  range_read("db_frutos") %>% 
+  merge(., ley, ) %>% 
+  select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
+  rename(treat = tratamientos
+         , n_treat = n_trat
+         , block = bloque
+         , n_plant = n_planta
+         , weigth = peso
+         , long = largo
+         , n_fruits = n_frutos
+         , diameter_1 = diametro_1
+         , diameter_2 = diametro_2
+         , sample = muestra
+         , scion = yema
+         , stock = patron
+         , edge = puente
+         ) %>% 
+  dplyr::arrange(year, n, treat) %>% 
+  mutate(diameter_average = (diameter_1 + diameter_2)/2) %>% 
+  mutate(across(year:sample, ~ as.factor(.)))
+str(fru)
 ```
 
 # Data summary
@@ -69,13 +89,18 @@ fru <-  gs %>%
 sm <- rdt %>% 
   group_by(year, treat) %>% 
   summarise(across(height:sproud, ~ sum(!is.na(.))))
+
+sm <- fru %>% 
+  group_by(year, treat) %>% 
+  summarise(across(weigth:diameter_average, ~ sum(!is.na(.))))
+
 ```
 
 # Objetivos
 
-- Determinar las caracteristicas agronómicas por tipo de injerto intermedio para las variables alt_planta	n_frutos	per_floracion
+- Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
 
-- Evaluar la calidad del fruto por tipo de injerto intermedio
+- Evaluar la calidad del fruto en la relación patron-injerto intermedio
 
 
 # Obj. 1
@@ -255,9 +280,99 @@ mv %>%
 
 # Obj. 2
 
+# Weigth
 
+```{r}
+model <- fru %>% 
+  lm(weigth  ~ block + treat, .)
 
+plot_diag(model) %>% 
+  plot_grid(plotlist = ., ncol = 2)
 
+fru %>% 
+  plot_raw(x = "treat", y = "weigth")
+
+anova(model)
+
+mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+  pluck("groups") %>% 
+  rownames_to_column("treat")
+
+p5 <- mc %>% 
+  plot_smr(x = "treat"
+           , y = "weigth"
+           , sig = "groups"
+           , ylimits = c(0, 600, 100)
+           , legend = "none"
+           , ylab = "Fruit weigth (g)"
+           , xlab = "Treatment"
+           )
+
+p5
+
+```
+
+# Long
+
+```{r}
+model <- fru %>% 
+  lm(long  ~ block + treat, .)
+
+plot_diag(model) %>% 
+  plot_grid(plotlist = ., ncol = 2)
+
+fru %>% 
+  plot_raw(x = "treat", y = "long")
+
+anova(model)
+
+mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+  pluck("groups") %>% 
+  rownames_to_column("treat")
+
+p6 <- mc %>% 
+  plot_smr(x = "treat"
+           , y = "long"
+           , sig = "groups"
+           , ylimits = c(0, 120, 20)
+           , legend = "none"
+           , ylab = "Fruit long (mm)"
+           , xlab = "Treatment"
+           )
+
+p6
+```
+
+# Diameter
+
+```{r}
+model <- fru %>% 
+  lm(diameter_average  ~ block + treat, .)
+
+plot_diag(model) %>% 
+  plot_grid(plotlist = ., ncol = 2)
+
+fru %>% 
+  plot_raw(x = "treat", y = "diameter_average")
+
+anova(model)
+
+mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+  pluck("groups") %>% 
+  rownames_to_column("treat")
+
+p7 <- mc %>% 
+  plot_smr(x = "treat"
+           , y = "diameter_average"
+           , sig = "groups"
+           , ylimits = c(0, 100, 20)
+           , legend = "none"
+           , ylab = "Fruit diameter (mm)"
+           , xlab = "Treatment"
+           )
+
+p7
+```
 
 
 
