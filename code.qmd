@@ -93,7 +93,6 @@ sm <- rdt %>%
 sm <- fru %>% 
   group_by(year, treat) %>% 
   summarise(across(weigth:diameter_average, ~ sum(!is.na(.))))
-
 ```
 
 # Objetivos
@@ -103,19 +102,26 @@ sm <- fru %>%
 - Evaluar la calidad del fruto en la relación patron-injerto intermedio
 
 
-# Obj. 1
+# Objetivo. 1
 
 ## Plant height
 
 ```{r}
-model <- rdt %>% 
-  lm(height  ~ block + treat, .)
+rdt_c <- rdt %>% 
+  outliers_remove(trait = "height"
+                  , model = "0 + (1|block) + stock*edge"
+                  , drop_na = F
+                  ) %>% 
+  pluck(1)
+  
+model <- rdt_c %>% 
+  lm(height  ~ block + stock*edge, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
-rdt %>% 
-  plot_raw(x = "treat", y = "height")
+rdt_c %>% 
+  plot_raw(x = "stock", y = "height", group = "edge")
 
 anova(model)
 
@@ -123,18 +129,18 @@ anova(model)
 #   cld(Letters = letters, reversed = T) %>% 
 #   mutate(across(.group, trimws))
 
-mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat") %>% 
+  separate(treat, c("stock", "edge"))
 
 p1 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "stock"
            , y = "height"
+           , group = "edge"
            , sig = "groups"
            , ylimits = c(0, 6, 1)
-           , legend = "none"
            , ylab = "Plant height (m)"
-           , xlab = "Treatment"
            )
 
 p1
@@ -184,7 +190,7 @@ plot_diag(model) %>%
   plot_grid(plotlist = ., ncol = 2)
 
 rdt %>% 
-  plot_raw(x = "treat", y = "n_fruits")
+  plot_raw(x = "treat", y = "n_fruits", group = "year")
 
 anova(model)
 
@@ -200,6 +206,7 @@ p3 <- mc %>%
            , sig = "groups"
            , ylimits = c(0, 250, 50)
            )
+p3
 ```
 
 ## Flowering
@@ -228,6 +235,7 @@ p4 <- mc %>%
            , sig = "groups"
            , ylimits = c(0, 100, 20)
            )
+p4
 ```
 
 ## Figura 1
@@ -309,7 +317,6 @@ p5 <- mc %>%
            )
 
 p5
-
 ```
 
 # Long
@@ -374,12 +381,37 @@ p7 <- mc %>%
 p7
 ```
 
+## Multivariate
+
+```{r}
+mv <- fru %>% 
+  group_by(treat) %>% 
+  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>% 
+  dplyr::select(!c(diameter_1, diameter_2))
+  
+pca <- mv %>% 
+  PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
+f4a <- plot.PCA(x = pca, choix = "var")
+f4b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
 
+list(f4a, f4b) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = "auto"
+              ) %>% 
+  ggsave(plot = ., "files/Fig-4.jpg", units = "cm"
+         , width = 30, height = 15)
 
+```
 
-
-
-
-
+```{r}
+mv %>% 
+  select(where(is.numeric)) %>% 
+  pairs.panels(.
+             , pch = 21
+             , method = "pearson"
+             , stars = T
+             , scale = F
+             , lm = T
+             ) 
+```
