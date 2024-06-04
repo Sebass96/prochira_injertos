@@ -144,19 +144,27 @@ p1 <- mc %>%
            )
 
 p1
+
 ```
 
 ## Plant sproud
 
 ```{r}
-model <- rdt %>% 
-  lm(sproud  ~ block + treat, .)
+rdt_c <- rdt %>% 
+  outliers_remove(trait = "sproud"
+                  , model = "0 + (1|block) + stock*edge"
+                  , drop_na = F
+                  ) %>% 
+  pluck(1)
+
+model <- rdt_c %>% 
+  lm(sproud  ~ block + stock*edge, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
-rdt %>% 
-  plot_raw(x = "treat", y = "sproud")
+rdt_c %>% 
+  plot_raw(x = "stock", y = "sproud", group = "edge")
 
 anova(model)
 
@@ -164,20 +172,22 @@ anova(model)
 #   cld(Letters = letters, reversed = T) %>% 
 #   mutate(across(.group, trimws))
 
-mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat")%>% 
+  separate(treat, c("stock", "edge"))
 
 p2 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "stock"
            , y = "sproud"
+           , group = "edge"
            , sig = "groups"
            , ylimits = c(0, 90, 10)
-           , legend = "none"
            , ylab = "Sproud ('%')"
            , xlab = "Treatment"
            )
 p2
+
 ```
 
 ## Number of fruits
@@ -205,6 +215,8 @@ p3 <- mc %>%
            , group = "year"
            , sig = "groups"
            , ylimits = c(0, 250, 50)
+           , ylab = "Number of fruits"
+           , xlab = "Treatment"
            )
 p3
 ```
@@ -234,6 +246,8 @@ p4 <- mc %>%
            , group = "year"
            , sig = "groups"
            , ylimits = c(0, 100, 20)
+           , ylab = "Flowering"
+           , xlab = "Treatment"
            )
 p4
 ```
@@ -284,6 +298,7 @@ mv %>%
              , scale = F
              , lm = T
              ) 
+
 ```
 
 # Obj. 2
@@ -292,57 +307,61 @@ mv %>%
 
 ```{r}
 model <- fru %>% 
-  lm(weigth  ~ block + treat, .)
+  lm(weigth  ~ block + stock*edge, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 fru %>% 
-  plot_raw(x = "treat", y = "weigth")
+  plot_raw(x = "stock", y = "weigth", group = "edge")
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat")%>% 
+  separate(treat, c("stock", "edge"))
 
 p5 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "stock"
            , y = "weigth"
+           , group = "edge"
            , sig = "groups"
            , ylimits = c(0, 600, 100)
-           , legend = "none"
            , ylab = "Fruit weigth (g)"
            , xlab = "Treatment"
            )
 
 p5
+
 ```
 
 # Long
 
 ```{r}
 model <- fru %>% 
-  lm(long  ~ block + treat, .)
+  lm(long  ~ block + stock*edge, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 fru %>% 
-  plot_raw(x = "treat", y = "long")
+  plot_raw(x = "stock", y = "long", group = "edge")
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat")%>% 
+  separate(treat, c("stock", "edge"))
+
 
 p6 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "stock"
            , y = "long"
+           , group = "edge"
            , sig = "groups"
            , ylimits = c(0, 120, 20)
-           , legend = "none"
            , ylab = "Fruit long (mm)"
            , xlab = "Treatment"
            )
@@ -354,31 +373,33 @@ p6
 
 ```{r}
 model <- fru %>% 
-  lm(diameter_average  ~ block + treat, .)
+  lm(diameter_average ~ stock*edge, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
 fru %>% 
-  plot_raw(x = "treat", y = "diameter_average")
+  plot_raw(x = "stock", y = "diameter_average", group = "edge")
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("treat")) %>% 
+mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
   pluck("groups") %>% 
-  rownames_to_column("treat")
+  rownames_to_column("treat")%>% 
+  separate(treat, c("stock", "edge"))
 
 p7 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "stock"
            , y = "diameter_average"
+           , group = "edge"
            , sig = "groups"
            , ylimits = c(0, 100, 20)
-           , legend = "none"
            , ylab = "Fruit diameter (mm)"
            , xlab = "Treatment"
            )
 
 p7
+
 ```
 
 ## Multivariate
