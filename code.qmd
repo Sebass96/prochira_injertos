@@ -80,7 +80,9 @@ fru <-  gs %>%
   dplyr::arrange(year, n, treat) %>% 
   mutate(diameter_average = (diameter_1 + diameter_2)/2) %>% 
   mutate(across(year:sample, ~ as.factor(.)))
-str(fru)
+
+glimpse(fru)
+
 ```
 
 # Data summary
@@ -107,6 +109,9 @@ sm <- fru %>%
 ## Plant height
 
 ```{r}
+rdt %>% 
+  identify_outliers(height)
+
 rdt_c <- rdt %>% 
   outliers_remove(trait = "height"
                   , model = "0 + (1|block) + stock*edge"
@@ -139,7 +144,7 @@ p1 <- mc %>%
            , y = "height"
            , group = "edge"
            , sig = "groups"
-           , ylimits = c(0, 6, 1)
+           , ylimits = c(0, 5, 1)
            , ylab = "Plant height (m)"
            )
 
@@ -147,9 +152,13 @@ p1
 
 ```
 
+
 ## Plant sproud
 
 ```{r}
+rdt %>% 
+  identify_outliers(sproud)
+
 rdt_c <- rdt %>% 
   outliers_remove(trait = "sproud"
                   , model = "0 + (1|block) + stock*edge"
@@ -193,6 +202,9 @@ p2
 ## Number of fruits
 
 ```{r}
+rdt %>% 
+  identify_outliers(n_fruits)
+
 model <- rdt %>% 
   lm(n_fruits  ~ block + treat + year + treat:year, .)
 
@@ -214,11 +226,12 @@ p3 <- mc %>%
            , y = "n_fruits"
            , group = "year"
            , sig = "groups"
-           , ylimits = c(0, 250, 50)
+           , ylimits = c(0, 300, 50)
            , ylab = "Number of fruits"
            , xlab = "Treatment"
            )
 p3
+
 ```
 
 ## Flowering
@@ -250,6 +263,7 @@ p4 <- mc %>%
            , xlab = "Treatment"
            )
 p4
+
 ```
 
 ## Figura 1
