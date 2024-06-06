@@ -20,7 +20,9 @@ execute:
 ```{r}
 #| label:  setup
 
-library(emmeans) 
+library(emmeans)
+library(rstatix)
+library(corrplot)
 library(multcomp)
 source('https://inkaverse.com/setup.r')
 
@@ -109,8 +111,6 @@ sm <- fru %>%
 ## Plant height
 
 ```{r}
-library(rstatix)
-
 rdt %>% 
   identify_outliers(height)
 
@@ -475,12 +475,22 @@ mv %>%
              , lm = T
              ) 
 
-library(corrplot)
-
 M <- cor(mv[,-c(1)], method ="pearson")
 
 corrplot(M, method="color")
 
 corrplot.mixed(M)
+
+corrplot(M, method="number", type="upper")
+
+library(ggstatsplot)
+
+ggcorrmat(
+  data     = fru,
+  colors   = c("#B2182B", "white", "#4D4D4D"),
+  title    = "Correlalogram for mammals sleep dataset",
+  subtitle = "sleep units: hours; weight units: kilograms"
+)
+
 
 ```
