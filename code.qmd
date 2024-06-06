@@ -109,6 +109,8 @@ sm <- fru %>%
 ## Plant height
 
 ```{r}
+library(rstatix)
+
 rdt %>% 
   identify_outliers(height)
 
@@ -237,6 +239,9 @@ p3
 ## Flowering
 
 ```{r}
+rdt %>% 
+  identify_outliers(flowering)
+
 model <- rdt %>% 
   lm(flowering  ~ block + treat + year + treat:year, .)
 
@@ -259,7 +264,7 @@ p4 <- mc %>%
            , group = "year"
            , sig = "groups"
            , ylimits = c(0, 100, 20)
-           , ylab = "Flowering"
+           , ylab = "Flowering (%)"
            , xlab = "Treatment"
            )
 p4
@@ -320,6 +325,9 @@ mv %>%
 # Weigth
 
 ```{r}
+fru %>% 
+  identify_outliers(weigth)
+
 model <- fru %>% 
   lm(weigth  ~ block + stock*edge, .)
 
@@ -353,6 +361,9 @@ p5
 # Long
 
 ```{r}
+fru %>% 
+  identify_outliers(long)
+
 model <- fru %>% 
   lm(long  ~ block + stock*edge, .)
 
@@ -386,6 +397,9 @@ p6
 # Diameter
 
 ```{r}
+fru %>% 
+  identify_outliers(diameter_average)
+
 model <- fru %>% 
   lm(diameter_average ~ stock*edge, .)
 
@@ -414,6 +428,17 @@ p7 <- mc %>%
 
 p7
 
+```
+
+# Figura 3
+
+```{r}
+list(p5, p6, p7) %>% 
+  plot_grid(plotlist = ., ncol = 2
+            , labels = "auto"
+            ) %>% 
+  ggsave(plot = ., "files/Fig-3.jpg", units = "cm"
+         , width = 25, height = 18)
 ```
 
 ## Multivariate
@@ -449,4 +474,13 @@ mv %>%
              , scale = F
              , lm = T
              ) 
+
+library(corrplot)
+
+M <- cor(mv[,-c(1)], method ="pearson")
+
+corrplot(M, method="color")
+
+corrplot.mixed(M)
+
 ```
