@@ -24,6 +24,7 @@ library(emmeans)
 library(rstatix)
 library(corrplot)
 library(multcomp)
+library(dlookr)
 source('https://inkaverse.com/setup.r')
 
 session_info()
@@ -97,6 +98,15 @@ sm <- rdt %>%
 sm <- fru %>% 
   group_by(year, treat) %>% 
   summarise(across(weigth:diameter_average, ~ sum(!is.na(.))))
+
+sm
+
+diagnose_outlier(rdt) %>% 
+  filter(outliers_cnt > 0) 
+
+diagnose_outlier(fru) %>% 
+  filter(outliers_cnt > 0)
+
 ```
 
 # Objetivos
@@ -113,6 +123,12 @@ sm <- fru %>%
 ```{r}
 rdt %>% 
   identify_outliers(height)
+
+rdt %>%
+  plot_outlier(diagnose_outlier(rdt) %>% 
+                 filter(variables == "height") %>% 
+                 select(variables) %>% 
+                 unlist())
 
 rdt_c <- rdt %>% 
   outliers_remove(trait = "height"
