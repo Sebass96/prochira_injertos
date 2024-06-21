@@ -177,6 +177,12 @@ p1
 rdt %>% 
   identify_outliers(sproud)
 
+rdt %>%
+  plot_outlier(diagnose_outlier(rdt) %>% 
+                 filter(variables == "sproud") %>% 
+                 select(variables) %>% 
+                 unlist())
+
 rdt_c <- rdt %>% 
   outliers_remove(trait = "sproud"
                   , model = "0 + (1|block) + stock*edge"
@@ -223,13 +229,26 @@ p2
 rdt %>% 
   identify_outliers(n_fruits)
 
-model <- rdt %>% 
+rdt %>%
+  plot_outlier(diagnose_outlier(rdt) %>% 
+                 filter(variables == "n_fruits") %>% 
+                 select(variables) %>% 
+                 unlist())
+
+rdt_c <- rdt %>% 
+  outliers_remove(trait = "n_fruits"
+                  , model = "0 + (1|block) + treat + year"
+                  , drop_na = F
+                  ) %>% 
+  pluck(1)
+
+model <- rdt_c %>% 
   lm(n_fruits  ~ block + treat + year + treat:year, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
-rdt %>% 
+rdt_c %>% 
   plot_raw(x = "treat", y = "n_fruits", group = "year")
 
 anova(model)
