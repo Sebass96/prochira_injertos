@@ -353,6 +353,14 @@ mv %>%
              , lm = T
              ) 
 
+M <- cor(mv[,-c(1)], method ="pearson")
+
+corrplot(M, method="color")
+
+corrplot.mixed(M)
+
+corrplot(M, method="number", type="upper")
+
 ```
 
 # Obj. 2
@@ -517,15 +525,5 @@ corrplot(M, method="color")
 corrplot.mixed(M)
 
 corrplot(M, method="number", type="upper")
-
-library(ggstatsplot)
-
-ggcorrmat(
-  data     = fru,
-  colors   = c("#B2182B", "white", "#4D4D4D"),
-  title    = "Correlalogram for mammals sleep dataset",
-  subtitle = "sleep units: hours; weight units: kilograms"
-)
-
 
 ```
