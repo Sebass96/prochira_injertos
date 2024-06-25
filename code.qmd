@@ -101,6 +101,8 @@ sm <- fru %>%
 
 sm
 
+diagnose(rdt)
+
 diagnose_outlier(rdt) %>% 
   filter(outliers_cnt > 0) 
 
@@ -164,7 +166,17 @@ p1 <- mc %>%
            , sig = "groups"
            , ylimits = c(0, 5, 1)
            , ylab = "Plant height (m)"
-           )
+           , xlab = "Stock"
+           , glab = "Edge"
+           , sigsize = 10
+           , color = F
+           ) +
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20))
+  
 
 p1
 
@@ -215,10 +227,18 @@ p2 <- mc %>%
            , y = "sproud"
            , group = "edge"
            , sig = "groups"
-           , ylimits = c(0, 90, 10)
+           , ylimits = c(0, 80, 10)
            , ylab = "Sproud ('%')"
-           , xlab = "Treatment"
-           )
+           , xlab = "Stock"
+           , glab = "Edge"
+           , sigsize = 10
+           , color = F
+           )+
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20))
 p2
 
 ```
@@ -237,13 +257,13 @@ rdt %>%
 
 rdt_c <- rdt %>% 
   outliers_remove(trait = "n_fruits"
-                  , model = "0 + (1|block) + treat + year"
+                  , model = "0 + (1|block) + treat*year"
                   , drop_na = F
                   ) %>% 
   pluck(1)
 
 model <- rdt_c %>% 
-  lm(n_fruits  ~ block + treat + year + treat:year, .)
+  lm(n_fruits ~ block + treat + year + treat:year, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
@@ -259,14 +279,22 @@ mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>%
   separate(treat, c("treat", "year"))
 
 p3 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "treat", type = "line"
            , y = "n_fruits"
            , group = "year"
            , sig = "groups"
-           , ylimits = c(0, 300, 50)
-           , ylab = "Number of fruits"
+           , sigsize = 20
+           , ylimits = c(150, 275, 25)
+           , ylab = "Number of fruits (u)"
            , xlab = "Treatment"
-           )
+           , glab = "Year"
+           , color = F
+           ) +
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20))
 p3
 
 ```
@@ -277,13 +305,26 @@ p3
 rdt %>% 
   identify_outliers(flowering)
 
-model <- rdt %>% 
+rdt %>%
+  plot_outlier(diagnose_outlier(rdt) %>% 
+                 filter(variables == "flowering") %>% 
+                 select(variables) %>% 
+                 unlist())
+
+rdt_c <- rdt %>% 
+  outliers_remove(trait = "flowering"
+                  , model = "0 + (1|block) + treat*year"
+                  , drop_na = F
+                  ) %>% 
+  pluck(1)
+
+model <- rdt_c %>% 
   lm(flowering  ~ block + treat + year + treat:year, .)
 
 plot_diag(model) %>% 
   plot_grid(plotlist = ., ncol = 2)
 
-rdt %>% 
+rdt_c %>% 
   plot_raw(x = "treat", y = "flowering", group = "year")
 
 anova(model)
@@ -294,14 +335,22 @@ mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>%
   separate(treat, c("treat", "year"))
 
 p4 <- mc %>% 
-  plot_smr(x = "treat"
+  plot_smr(x = "treat",type = "line"
            , y = "flowering"
            , group = "year"
            , sig = "groups"
-           , ylimits = c(0, 100, 20)
-           , ylab = "Flowering (%)"
+           , ylimits = c(40, 100, 10)
+           , ylab = "Flowering ('%')"
            , xlab = "Treatment"
-           )
+           , glab = "Year"
+           , sigsize = 80
+           , color = F
+           ) +
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20))
 p4
 
 ```
@@ -311,10 +360,10 @@ p4
 ```{r}
 list(p1, p2, p3, p4) %>% 
   plot_grid(plotlist = ., ncol = 2
-            , labels = "auto"
+            , labels = "auto", label_size = 30
             ) %>% 
   ggsave(plot = ., "files/Fig-1.jpg", units = "cm"
-         , width = 25, height = 18)
+         , width = 35, height = 25)
 
 
 ```
@@ -324,7 +373,12 @@ list(p1, p2, p3, p4) %>%
 ```{r}
 mv <- rdt %>% 
   group_by(treat) %>% 
-  summarise(across(where(is.numeric), ~ mean(., na.rm = T)))
+  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>% 
+   rename(Treat = treat
+         , Height = height
+         , Fruits = n_fruits
+         , Flowering = flowering
+         , Sproud = sproud)
   
 
 pca <- mv %>% 
@@ -334,34 +388,36 @@ pca <- mv %>%
 f2a <- plot.PCA(x = pca, choix = "var")
 f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
 
-list(f2a, f2b) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = "auto"
+f2a
+f2b
+
+```
+
+# Correlation
+
+```{r}
+
+M <- cor(mv[,-c(1)], method ="pearson")
+
+f2c <- corrplot(M, method = "number", type = "upper")
+
+f2c
+
+```
+
+
+## Figura 2
+
+```{r}
+list(f2a, f2b, f2c) %>% 
+  plot_grid(plotlist = ., ncol = 2, nrow = 1, labels = "auto"
               ) %>% 
   ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
          , width = 30, height = 15)
 
-```
-
-```{r}
-mv %>% 
-  select(where(is.numeric)) %>% 
-  pairs.panels(.
-             , pch = 21
-             , method = "pearson"
-             , stars = T
-             , scale = F
-             , lm = T
-             ) 
-
-M <- cor(mv[,-c(1)], method ="pearson")
-
-corrplot(M, method="color")
-
-corrplot.mixed(M)
-
-corrplot(M, method="number", type="upper")
 
 ```
+
 
 # Obj. 2
 
@@ -435,6 +491,7 @@ p6 <- mc %>%
            )
 
 p6
+
 ```
 
 # Diameter
