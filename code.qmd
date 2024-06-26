@@ -388,8 +388,6 @@ pca <- mv %>%
 f2a <- plot.PCA(x = pca, choix = "var")
 f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
 
-f2a
-f2b
 
 ```
 
@@ -399,9 +397,9 @@ f2b
 
 M <- cor(mv[,-c(1)], method ="pearson")
 
-f2c <- corrplot(M, method = "number", type = "upper")
+f2 <- ~ {corrplot(M, method = "number", type = "upper")}
 
-f2c
+class(f2a)
 
 ```
 
@@ -409,8 +407,8 @@ f2c
 ## Figura 2
 
 ```{r}
-list(f2a, f2b, f2c) %>% 
-  plot_grid(plotlist = ., ncol = 2, nrow = 1, labels = "auto"
+list(f2a, f2b, f2) %>% 
+  plot_grid(plotlist = ., ncol = 3, nrow = 1, labels = "auto"
               ) %>% 
   ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
          , width = 30, height = 15)
@@ -426,6 +424,19 @@ list(f2a, f2b, f2c) %>%
 ```{r}
 fru %>% 
   identify_outliers(weigth)
+
+fru %>%
+  plot_outlier(diagnose_outlier(fru) %>% 
+                 filter(variables == "weigth") %>% 
+                 select(variables) %>% 
+                 unlist())
+
+fru_c <- fru %>% 
+  outliers_remove(trait = "weigth"
+                  , model = "0 + (1|block) + stock*edge"
+                  , drop_na = F
+                  ) %>% 
+  pluck(1)
 
 model <- fru %>% 
   lm(weigth  ~ block + stock*edge, .)
