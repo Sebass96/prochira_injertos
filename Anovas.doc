@@ -1,0 +1,106 @@
+{\rtf1\ansi\deff0 {\fonttbl {\f0 Times New Roman;}}
+{\pard Table XX \par}
+{\pard  \par}
+{\pard\i Descriptive statistics for weigth as a function of treat. \par}
+{\pard  \par}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2051 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2915 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{treat}\cell
+\pard\sa0\sb0\intbl\qc{{\i M}}\cell
+\pard\sa0\sb0\intbl\qc{{\i SD}}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2051 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx2915 
+\clbrdrt\brdrw15\brdrs
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{111}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{447.23}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{70.09}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{121}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{462.34}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{69.82}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{131}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{484.70}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{93.46}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{141}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{468.17}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{118.73}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{211}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{482.03}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{87.30}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{221}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{452.53}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{79.92}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clvertalc\cellx2051 
+\clvertalc\cellx2915 
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{231}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{465.97}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{92.07}\cell
+\row
+}
+{
+\trowd \trgaph100
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx2051 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx2915 
+\clbrdrb\brdrw15\brdrs
+\clvertalc\cellx3779 
+\pard\sa0\sb0\intbl\qr{241}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{484.97}\cell
+\pard\sa0\sb0\intbl\tqdec\tldot\tx302{101.98}\cell
+\row
+}
+{\pard \par}{\pard{\i Note.} {\i M} and {\i SD} represent mean and standard deviation, respectively.\par}
+}

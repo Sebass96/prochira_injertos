@@ -385,8 +385,23 @@ pca <- mv %>%
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f2a <- plot.PCA(x = pca, choix = "var")
-f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
+f2a <- plot.PCA(x = pca, choix = "var",
+                ggoptions = list(size = 5)) +
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20),
+       plot.title = element_text(size = 20))
+
+f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1,
+                ggoptions = list(size = 5))+
+  theme(axis.title.x = element_text(size = 20),
+       axis.title.y = element_text(size = 20),
+       axis.text = element_text(size = 20),
+       legend.text = element_text(size = 20),
+       legend.title = element_text(size = 20),
+       plot.title = element_text(size = 20))
 
 
 ```
@@ -397,9 +412,9 @@ f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
 
 M <- cor(mv[,-c(1)], method ="pearson")
 
-f2 <- ~ {corrplot(M, method = "number", type = "upper")}
+f2c <- corrplot(M, method = "number", type = "upper")
 
-class(f2a)
+class(f2c)
 
 ```
 
@@ -407,11 +422,13 @@ class(f2a)
 ## Figura 2
 
 ```{r}
-list(f2a, f2b, f2) %>% 
-  plot_grid(plotlist = ., ncol = 3, nrow = 1, labels = "auto"
-              ) %>% 
+list(f2a, f2b, f2c) %>% 
+  plot_grid(plotlist = ., ncol = 2, nrow = 1, labels = "auto",
+            label_size = 30,
+            rel_heights = c(1,4),
+            byrow = TRUE) %>% 
   ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
-         , width = 30, height = 15)
+         , width = 25, height = 15)
 
 
 ```
@@ -430,13 +447,6 @@ fru %>%
                  filter(variables == "weigth") %>% 
                  select(variables) %>% 
                  unlist())
-
-fru_c <- fru %>% 
-  outliers_remove(trait = "weigth"
-                  , model = "0 + (1|block) + stock*edge"
-                  , drop_na = F
-                  ) %>% 
-  pluck(1)
 
 model <- fru %>% 
   lm(weigth  ~ block + stock*edge, .)
@@ -465,6 +475,34 @@ p5 <- mc %>%
            )
 
 p5
+
+
+```
+
+# Tabla 1
+
+```{r}
+sts <- Summarize(weigth  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
+
+tb1 <- sts%>% 
+  merge(., mc) %>% 
+  select(stock, edge, mean, sd, min, max, groups) %>% 
+  mutate(treat = paste(stock,"x", edge)) %>% 
+   select(treat, everything()) %>% 
+  rename(Treat = treat,
+         Stock = stock,
+         Edge = edge,
+         Sig = groups)
+
+write.table(tb1, file = "tabla1.csv", sep = ";", row.names = F)
+  
+tb <- tb1 %>% 
+  kbl(caption = "Statistics",
+      align = "lccrr",
+      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+tb
 
 ```
 
@@ -505,6 +543,34 @@ p6
 
 ```
 
+# Tabla 2
+
+```{r}
+sts <- Summarize(long  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
+
+tb2 <- sts%>% 
+  merge(., mc) %>% 
+  select(stock, edge, mean, sd, min, max, groups) %>% 
+  mutate(treat = paste(stock,"x", edge)) %>% 
+   select(treat, everything()) %>% 
+  rename(Treat = treat,
+         Stock = stock,
+         Edge = edge,
+         Sig = groups)
+
+write.table(tb2, file = "tabla2.csv", sep = ";", row.names = F)
+  
+tb <- tb2 %>% 
+  kbl(caption = "Statistics",
+      align = "lccrr",
+      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+tb
+
+```
+ 
+
 # Diameter
 
 ```{r}
@@ -539,6 +605,32 @@ p7 <- mc %>%
 
 p7
 
+```
+
+# Tabla 3
+
+```{r}
+sts <- Summarize(diameter_average ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
+
+tb3 <- sts%>% 
+  merge(., mc) %>% 
+  select(stock, edge, mean, sd, min, max, groups) %>% 
+  mutate(treat = paste(stock,"x", edge)) %>% 
+   select(treat, everything()) %>% 
+  rename(Treat = treat,
+         Stock = stock,
+         Edge = edge,
+         Sig = groups)
+
+write.table(tb2, file = "tabla2.csv", sep = ";", row.names = F)
+  
+tb <- tb3 %>% 
+  kbl(caption = "Statistics",
+      align = "lccrr",
+      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+tb
 ```
 
 # Figura 3
