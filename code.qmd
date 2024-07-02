@@ -25,6 +25,7 @@ library(rstatix)
 library(corrplot)
 library(multcomp)
 library(dlookr)
+library(FSA)
 source('https://inkaverse.com/setup.r')
 
 session_info()
@@ -120,6 +121,8 @@ diagnose_outlier(fru) %>%
 
 # Objetivo. 1
 
+- Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
+
 ## Plant height
 
 ```{r}
@@ -168,7 +171,7 @@ p1 <- mc %>%
            , ylab = "Plant height (m)"
            , xlab = "Stock"
            , glab = "Edge"
-           , sigsize = 30
+           # , sigsize = 30
            , color = F
            ) +
   theme(axis.title.x = element_text(size = 80),
@@ -181,7 +184,6 @@ p1 <- mc %>%
 p1
 
 ```
-
 
 ## Plant sproud
 
@@ -231,7 +233,7 @@ p2 <- mc %>%
            , ylab = "Sproud ('%')"
            , xlab = "Stock"
            , glab = "Edge"
-           , sigsize = 30
+           # , sigsize = 30
            , color = F
            )+
   theme(axis.title.x = element_text(size = 80),
@@ -283,7 +285,7 @@ p3 <- mc %>%
            , y = "n_fruits"
            , group = "year"
            , sig = "groups"
-           , sigsize = 30
+           # , sigsize = 30
            , ylimits = c(150, 275, 25)
            , ylab = "Number of fruits (u)"
            , xlab = "Treatment"
@@ -343,7 +345,7 @@ p4 <- mc %>%
            , ylab = "Flowering ('%')"
            , xlab = "Treatment"
            , glab = "Year"
-           , sigsize = 80
+           # , sigsize = 80
            , color = F
            ) +
   theme(axis.title.x = element_text(size = 80),
@@ -360,10 +362,15 @@ p4
 ```{r}
 list(p1, p2, p3, p4) %>% 
   plot_grid(plotlist = ., ncol = 2
-            , labels = "auto", label_size = 80
+            , labels = "auto"
+            # , label_size = 80
             ) %>% 
-  ggsave(plot = ., "files/Fig-1.jpg", units = "cm"
-         , width = 120, height = 80)
+  ggsave2(plot = ., "files/Fig-1.jpg"
+         , units = "cm"
+         , width = 20
+         , height = 12
+         , dpi = 200
+         )
 
 
 ```
@@ -385,8 +392,9 @@ pca <- mv %>%
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f2a <- plot.PCA(x = pca, choix = "var",
-                ggoptions = list(size = 15)) +
+f2a <- plot.PCA(x = pca, choix = "var"
+                # , ggoptions = list(size = 15)
+                ) +
   theme(axis.title.x = element_text(size = 50),
        axis.title.y = element_text(size = 50),
        axis.text = element_text(size = 50),
@@ -394,8 +402,11 @@ f2a <- plot.PCA(x = pca, choix = "var",
        legend.title = element_text(size = 50),
        plot.title = element_text(size = 50))
 
-f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1,
-                ggoptions = list(size = 10))+
+f2b <- plot.PCA(x = pca, choix = "ind"
+                , habillage = 1
+                , invisible = c("ind")
+                # , ggoptions = list(size = 10)
+                ) +
   theme(axis.title.x = element_text(size = 50),
        axis.title.y = element_text(size = 50),
        axis.text = element_text(size = 50),
@@ -423,16 +434,19 @@ class(f2c)
 
 ```{r}
 list(f2a, f2b) %>% 
-  plot_grid(plotlist = ., ncol = 2, nrow = 1, labels = "auto",
-            label_size = 50) %>% 
-  ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
-         , width = 30, height = 15)
-
-
+  plot_grid(plotlist = ., ncol = 2, nrow = 1
+            , labels = "auto"
+            # , label_size = 50
+            , rel_widths = c(1, 1.7)
+            ) %>% 
+  ggsave2(plot = ., "files/Fig-2.jpg", units = "cm"
+         , width = 20, height = 9)
 ```
 
 
 # Obj. 2
+
+- Evaluar la calidad del fruto en la relación patron-injerto intermedio
 
 # Weigth
 
@@ -491,6 +505,8 @@ tb1 <- sts%>%
          Stock = stock,
          Edge = edge,
          Sig = groups)
+
+# tb1 %>% write_sheet(ss = gs, sheet = "tb1")
 
 write.table(tb1, file = "tabla1.csv", sep = ";", row.names = F)
   
