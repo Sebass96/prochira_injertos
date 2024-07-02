@@ -173,12 +173,12 @@ p1 <- mc %>%
            , glab = "Edge"
            # , sigsize = 30
            , color = F
-           ) +
-  theme(axis.title.x = element_text(size = 80),
-       axis.title.y = element_text(size = 80),
-       axis.text = element_text(size = 80),
-       legend.text = element_text(size = 80),
-       legend.title = element_text(size = 80))
+           )
+  # theme(axis.title.x = element_text(size = 80),
+  #      axis.title.y = element_text(size = 80),
+  #      axis.text = element_text(size = 80),
+  #      legend.text = element_text(size = 80),
+  #      legend.title = element_text(size = 80))
   
 
 p1
@@ -235,12 +235,8 @@ p2 <- mc %>%
            , glab = "Edge"
            # , sigsize = 30
            , color = F
-           )+
-  theme(axis.title.x = element_text(size = 80),
-       axis.title.y = element_text(size = 80),
-       axis.text = element_text(size = 80),
-       legend.text = element_text(size = 80),
-       legend.title = element_text(size = 80))
+           )
+
 p2
 
 ```
@@ -291,12 +287,8 @@ p3 <- mc %>%
            , xlab = "Treatment"
            , glab = "Year"
            , color = F
-           ) +
-  theme(axis.title.x = element_text(size = 80),
-       axis.title.y = element_text(size = 80),
-       axis.text = element_text(size = 80),
-       legend.text = element_text(size = 80),
-       legend.title = element_text(size = 80))
+           ) 
+
 p3
 
 ```
@@ -347,12 +339,8 @@ p4 <- mc %>%
            , glab = "Year"
            # , sigsize = 80
            , color = F
-           ) +
-  theme(axis.title.x = element_text(size = 80),
-       axis.title.y = element_text(size = 80),
-       axis.text = element_text(size = 80),
-       legend.text = element_text(size = 80),
-       legend.title = element_text(size = 80))
+           ) 
+
 p4
 
 ```
@@ -367,8 +355,8 @@ list(p1, p2, p3, p4) %>%
             ) %>% 
   ggsave2(plot = ., "files/Fig-1.jpg"
          , units = "cm"
-         , width = 20
-         , height = 12
+         , width = 21
+         , height = 13
          , dpi = 200
          )
 
@@ -394,26 +382,19 @@ pca <- mv %>%
 
 f2a <- plot.PCA(x = pca, choix = "var"
                 # , ggoptions = list(size = 15)
-                ) +
-  theme(axis.title.x = element_text(size = 50),
-       axis.title.y = element_text(size = 50),
-       axis.text = element_text(size = 50),
-       legend.text = element_text(size = 50),
-       legend.title = element_text(size = 50),
-       plot.title = element_text(size = 50))
+                )
+  # theme(axis.title.x = element_text(size = 50),
+  #      axis.title.y = element_text(size = 50),
+  #      axis.text = element_text(size = 50),
+  #      legend.text = element_text(size = 50),
+  #      legend.title = element_text(size = 50),
+  #      plot.title = element_text(size = 50))
 
 f2b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
                 , invisible = c("ind")
                 # , ggoptions = list(size = 10)
-                ) +
-  theme(axis.title.x = element_text(size = 50),
-       axis.title.y = element_text(size = 50),
-       axis.text = element_text(size = 50),
-       legend.text = element_text(size = 30),
-       legend.title = element_text(size = 30),
-       plot.title = element_text(size = 50))
-
+                ) 
 
 ```
 
@@ -508,15 +489,15 @@ tb1 <- sts%>%
 
 # tb1 %>% write_sheet(ss = gs, sheet = "tb1")
 
-write.table(tb1, file = "tabla1.csv", sep = ";", row.names = F)
+#write.table(tb1, file = "tabla1.csv", sep = ";", row.names = F)
   
-tb <- tb1 %>% 
-  kbl(caption = "Statistics",
-      align = "lccrr",
-      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
-
-tb
+# tb <- tb1 %>% 
+#   kbl(caption = "Statistics",
+#       align = "lccrr",
+#       col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
+#   kable_classic(full_width = F, html_font = "Cambria")
+# 
+# tb
 
 ```
 
@@ -572,15 +553,7 @@ tb2 <- sts%>%
          Edge = edge,
          Sig = groups)
 
-write.table(tb2, file = "tabla2.csv", sep = ";", row.names = F)
-  
-tb <- tb2 %>% 
-  kbl(caption = "Statistics",
-      align = "lccrr",
-      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
-
-tb
+#tb2 %>% write_sheet(ss = gs, sheet = "tb2")
 
 ```
  
@@ -636,15 +609,8 @@ tb3 <- sts%>%
          Edge = edge,
          Sig = groups)
 
-write.table(tb2, file = "tabla2.csv", sep = ";", row.names = F)
-  
-tb <- tb3 %>% 
-  kbl(caption = "Statistics",
-      align = "lccrr",
-      col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
-  kable_classic(full_width = F, html_font = "Cambria")
+tb3 %>% write_sheet(ss = gs, sheet = "tb3")
 
-tb
 ```
 
 # Figura 3
