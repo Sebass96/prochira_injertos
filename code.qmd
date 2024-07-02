@@ -168,14 +168,14 @@ p1 <- mc %>%
            , ylab = "Plant height (m)"
            , xlab = "Stock"
            , glab = "Edge"
-           , sigsize = 10
+           , sigsize = 30
            , color = F
            ) +
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20))
+  theme(axis.title.x = element_text(size = 80),
+       axis.title.y = element_text(size = 80),
+       axis.text = element_text(size = 80),
+       legend.text = element_text(size = 80),
+       legend.title = element_text(size = 80))
   
 
 p1
@@ -231,14 +231,14 @@ p2 <- mc %>%
            , ylab = "Sproud ('%')"
            , xlab = "Stock"
            , glab = "Edge"
-           , sigsize = 10
+           , sigsize = 30
            , color = F
            )+
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20))
+  theme(axis.title.x = element_text(size = 80),
+       axis.title.y = element_text(size = 80),
+       axis.text = element_text(size = 80),
+       legend.text = element_text(size = 80),
+       legend.title = element_text(size = 80))
 p2
 
 ```
@@ -283,18 +283,18 @@ p3 <- mc %>%
            , y = "n_fruits"
            , group = "year"
            , sig = "groups"
-           , sigsize = 20
+           , sigsize = 30
            , ylimits = c(150, 275, 25)
            , ylab = "Number of fruits (u)"
            , xlab = "Treatment"
            , glab = "Year"
            , color = F
            ) +
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20))
+  theme(axis.title.x = element_text(size = 80),
+       axis.title.y = element_text(size = 80),
+       axis.text = element_text(size = 80),
+       legend.text = element_text(size = 80),
+       legend.title = element_text(size = 80))
 p3
 
 ```
@@ -346,11 +346,11 @@ p4 <- mc %>%
            , sigsize = 80
            , color = F
            ) +
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20))
+  theme(axis.title.x = element_text(size = 80),
+       axis.title.y = element_text(size = 80),
+       axis.text = element_text(size = 80),
+       legend.text = element_text(size = 80),
+       legend.title = element_text(size = 80))
 p4
 
 ```
@@ -360,10 +360,10 @@ p4
 ```{r}
 list(p1, p2, p3, p4) %>% 
   plot_grid(plotlist = ., ncol = 2
-            , labels = "auto", label_size = 30
+            , labels = "auto", label_size = 80
             ) %>% 
   ggsave(plot = ., "files/Fig-1.jpg", units = "cm"
-         , width = 35, height = 25)
+         , width = 120, height = 80)
 
 
 ```
@@ -386,22 +386,22 @@ pca <- mv %>%
 
 
 f2a <- plot.PCA(x = pca, choix = "var",
-                ggoptions = list(size = 5)) +
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20),
-       plot.title = element_text(size = 20))
+                ggoptions = list(size = 15)) +
+  theme(axis.title.x = element_text(size = 50),
+       axis.title.y = element_text(size = 50),
+       axis.text = element_text(size = 50),
+       legend.text = element_text(size = 50),
+       legend.title = element_text(size = 50),
+       plot.title = element_text(size = 50))
 
 f2b <- plot.PCA(x = pca, choix = "ind", habillage = 1,
-                ggoptions = list(size = 5))+
-  theme(axis.title.x = element_text(size = 20),
-       axis.title.y = element_text(size = 20),
-       axis.text = element_text(size = 20),
-       legend.text = element_text(size = 20),
-       legend.title = element_text(size = 20),
-       plot.title = element_text(size = 20))
+                ggoptions = list(size = 10))+
+  theme(axis.title.x = element_text(size = 50),
+       axis.title.y = element_text(size = 50),
+       axis.text = element_text(size = 50),
+       legend.text = element_text(size = 30),
+       legend.title = element_text(size = 30),
+       plot.title = element_text(size = 50))
 
 
 ```
@@ -422,13 +422,11 @@ class(f2c)
 ## Figura 2
 
 ```{r}
-list(f2a, f2b, f2c) %>% 
+list(f2a, f2b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1, labels = "auto",
-            label_size = 30,
-            rel_heights = c(1,4),
-            byrow = TRUE) %>% 
+            label_size = 50) %>% 
   ggsave(plot = ., "files/Fig-2.jpg", units = "cm"
-         , width = 25, height = 15)
+         , width = 30, height = 15)
 
 
 ```
@@ -650,22 +648,37 @@ list(p5, p6, p7) %>%
 mv <- fru %>% 
   group_by(treat) %>% 
   summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>% 
-  dplyr::select(!c(diameter_1, diameter_2))
+  dplyr::select(!c(diameter_1, diameter_2, n_fruits)) %>% 
+   rename(Treat = treat
+         , Weight = weigth
+         , Length = long
+         , Diameter = diameter_average)
   
 pca <- mv %>% 
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f4a <- plot.PCA(x = pca, choix = "var")
-f4b <- plot.PCA(x = pca, choix = "ind", habillage = 1)
+f4a <- plot.PCA(x = pca, choix = "var",
+                ggoptions = list(size = 15)) +
+  theme(axis.title.x = element_text(size = 50),
+       axis.title.y = element_text(size = 50),
+       axis.text = element_text(size = 50),
+       legend.text = element_text(size = 50),
+       legend.title = element_text(size = 50),
+       plot.title = element_text(size = 50))
 
-list(f4a, f4b) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = "auto"
-              ) %>% 
-  ggsave(plot = ., "files/Fig-4.jpg", units = "cm"
-         , width = 30, height = 15)
+f4b <- plot.PCA(x = pca, choix = "ind", habillage = 1,
+                ggoptions = list(size = 10)) +
+  theme(axis.title.x = element_text(size = 50),
+       axis.title.y = element_text(size = 50),
+       axis.text = element_text(size = 50),
+       legend.text = element_text(size = 30),
+       legend.title = element_text(size = 30),
+       plot.title = element_text(size = 50))
 
 ```
+
+# Correlation
 
 ```{r}
 mv %>% 
@@ -680,10 +693,17 @@ mv %>%
 
 M <- cor(mv[,-c(1)], method ="pearson")
 
-corrplot(M, method="color")
-
-corrplot.mixed(M)
-
-corrplot(M, method="number", type="upper")
+f4c <- corrplot(M, method = "number", type = "upper")
 
 ```
+
+# Figura 4
+
+```{r}
+list(f4a, f4b) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = "auto",
+              label_size = 50) %>% 
+  ggsave(plot = ., "files/Fig-4.jpg", units = "cm"
+         , width = 30, height = 15)
+```
+
