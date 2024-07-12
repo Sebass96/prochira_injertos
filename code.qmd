@@ -355,7 +355,8 @@ list(f2a, f2b) %>%
             , rel_widths = c(1, 1.5)
             ) %>% 
   ggsave2(plot = ., "files/Fig-2.jpg", units = "cm"
-         , width = 25, height = 10)
+          , width = 25, height = 10
+          ) 
 ```
 
 # Correlation
@@ -594,23 +595,13 @@ pca <- mv %>%
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f4a <- plot.PCA(x = pca, choix = "var",
-                ggoptions = list(size = 15)) +
-  theme(axis.title.x = element_text(size = 50),
-       axis.title.y = element_text(size = 50),
-       axis.text = element_text(size = 50),
-       legend.text = element_text(size = 50),
-       legend.title = element_text(size = 50),
-       plot.title = element_text(size = 50))
+f4a <- plot.PCA(x = pca, choix = "var")
 
-f4b <- plot.PCA(x = pca, choix = "ind", habillage = 1,
-                ggoptions = list(size = 10)) +
-  theme(axis.title.x = element_text(size = 50),
-       axis.title.y = element_text(size = 50),
-       axis.text = element_text(size = 50),
-       legend.text = element_text(size = 30),
-       legend.title = element_text(size = 30),
-       plot.title = element_text(size = 50))
+
+f4b <- plot.PCA(x = pca, choix = "ind"
+                , habillage = 1
+                , invisible = c("ind"))
+            
 
 ```
 
@@ -637,9 +628,14 @@ f4c <- corrplot(M, method = "number", type = "upper")
 
 ```{r}
 list(f4a, f4b) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = "auto",
-              label_size = 50) %>% 
-  ggsave(plot = ., "files/Fig-4.jpg", units = "cm"
-         , width = 30, height = 15)
+  plot_grid(plotlist = ., ncol = 2, nrow = 1
+            , labels = "auto"
+            # , label_size = 50
+            , rel_widths = c(1, 1.45)
+            ) %>% 
+  ggsave2(plot = ., "files/Fig-4.jpg", units = "cm"
+         , width = 17
+         , height = 7
+         , dpi = 200)
 ```
 
