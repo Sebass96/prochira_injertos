@@ -17,16 +17,31 @@ execute:
 
 # Setup
 
+Instalar la version en desarrollo
+
+```{r}
+#| eval: false
+
+if (!require("remotes"))
+  install.packages("remotes")
+remotes::install_github("flavjack/inti")
+```
+
+
+
 ```{r}
 #| label:  setup
 
-library(emmeans)
-library(rstatix)
-library(corrplot)
-library(multcomp)
-library(dlookr)
-library(FSA)
 source('https://inkaverse.com/setup.r')
+library(emmeans)
+library(multcomp)
+library(lmerTest)
+
+# library(rstatix)
+# library(corrplot)
+# library(dlookr)
+# library(FSA)
+
 
 session_info()
 ```
@@ -46,8 +61,8 @@ ley <- gs %>%
 
 rdt <- gs %>% 
   range_read("db") %>% 
-  merge(., ley, ) %>% 
-  select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
+  merge(., ley) %>% 
+  dplyr::select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
   rename(treat = tratamientos
          , n_treat = n_trat
          , block = bloque
@@ -61,12 +76,14 @@ rdt <- gs %>%
          , edge = puente
          ) %>% 
   dplyr::arrange(year, n, treat) %>% 
-  mutate(across(year:n_plant, ~ as.factor(.)))
+  mutate(across(year:n_plant, ~ as.factor(.))) 
+
+str(rdt)
   
 fru <-  gs %>% 
   range_read("db_frutos") %>% 
   merge(., ley, ) %>% 
-  select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
+  dplyr::select(year = "año", n, tratamientos,n_trat:yema, everything()) %>% 
   rename(treat = tratamientos
          , n_treat = n_trat
          , block = bloque
@@ -86,7 +103,6 @@ fru <-  gs %>%
   mutate(across(year:sample, ~ as.factor(.)))
 
 glimpse(fru)
-
 ```
 
 # Data summary
@@ -96,20 +112,13 @@ sm <- rdt %>%
   group_by(year, treat) %>% 
   summarise(across(height:sproud, ~ sum(!is.na(.))))
 
+sm
+
 sm <- fru %>% 
   group_by(year, treat) %>% 
   summarise(across(weigth:diameter_average, ~ sum(!is.na(.))))
 
 sm
-
-diagnose(rdt)
-
-diagnose_outlier(rdt) %>% 
-  filter(outliers_cnt > 0) 
-
-diagnose_outlier(fru) %>% 
-  filter(outliers_cnt > 0)
-
 ```
 
 # Objetivos
@@ -121,295 +130,221 @@ diagnose_outlier(fru) %>%
 
 # Objetivo. 1
 
-- Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
+Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
 
-## Plant height
+## Height
 
 ```{r}
-rdt %>% 
-  identify_outliers(height)
+trait <- "height"
 
-rdt %>%
-  plot_outlier(diagnose_outlier(rdt) %>% 
-                 filter(variables == "height") %>% 
-                 select(variables) %>% 
-                 unlist())
+lmm <- paste({{trait}}, "~ 1 + (1|block) + stock*edge") %>% as.formula()
 
-rdt_c <- rdt %>% 
-  outliers_remove(trait = "height"
-                  , model = "0 + (1|block) + stock*edge"
-                  , drop_na = F
-                  ) %>% 
-  pluck(1)
-  
-model <- rdt_c %>% 
-  lm(height  ~ block + stock*edge, .)
+lmd <- paste({{trait}}, "~ block + stock*edge") %>% as.formula()
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+rmout <- rdt %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
 
-rdt_c %>% 
-  plot_raw(x = "stock", y = "height", group = "edge")
+rmout$diagplot
+
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-# mc <- emmeans(model, ~ treat) %>% 
-#   cld(Letters = letters, reversed = T) %>% 
-#   mutate(across(.group, trimws))
+mc <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat") %>% 
-  separate(treat, c("stock", "edge"))
-
-p1 <- mc %>% 
+p1a <- mc %>% 
   plot_smr(x = "stock"
-           , y = "height"
+           , y = "emmean"
            , group = "edge"
-           , sig = "groups"
-           , ylimits = c(0, 5, 1)
+           , sig = "group"
+           , error = "SE"
+           , color = T
            , ylab = "Plant height (m)"
-           , xlab = "Stock"
-           , glab = "Edge"
-           # , sigsize = 30
-           , color = F
+           , ylimits = c(0, 6, 2)
+           , 
            )
-  # theme(axis.title.x = element_text(size = 80),
-  #      axis.title.y = element_text(size = 80),
-  #      axis.text = element_text(size = 80),
-  #      legend.text = element_text(size = 80),
-  #      legend.title = element_text(size = 80))
-  
-
-p1
 
 ```
 
-## Plant sproud
+## Sproud
 
 ```{r}
-rdt %>% 
-  identify_outliers(sproud)
+trait <- "sproud"
 
-rdt %>%
-  plot_outlier(diagnose_outlier(rdt) %>% 
-                 filter(variables == "sproud") %>% 
-                 select(variables) %>% 
-                 unlist())
+lmm <- paste({{trait}}, "~ 1 + (1|block) + stock*edge") %>% as.formula()
 
-rdt_c <- rdt %>% 
-  outliers_remove(trait = "sproud"
-                  , model = "0 + (1|block) + stock*edge"
-                  , drop_na = F
-                  ) %>% 
-  pluck(1)
+lmd <- paste({{trait}}, "~ block + stock*edge") %>% as.formula()
 
-model <- rdt_c %>% 
-  lm(sproud  ~ block + stock*edge, .)
+rmout <- rdt %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+rmout$diagplot
 
-rdt_c %>% 
-  plot_raw(x = "stock", y = "sproud", group = "edge")
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-# mc_2 <- emmeans(model, ~ treat) %>% 
-#   cld(Letters = letters, reversed = T) %>% 
-#   mutate(across(.group, trimws))
+mc <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat")%>% 
-  separate(treat, c("stock", "edge"))
-
-p2 <- mc %>% 
+p1b <- mc %>% 
   plot_smr(x = "stock"
-           , y = "sproud"
+           , y = "emmean"
            , group = "edge"
-           , sig = "groups"
-           , ylimits = c(0, 80, 10)
+           , sig = "group"
+           , error = "SE"
+           , color = T
            , ylab = "Sproud ('%')"
-           , xlab = "Stock"
-           , glab = "Edge"
-           # , sigsize = 30
-           , color = F
+           , ylimits = c(0, 100, 20)
            )
-
-p2
-
 ```
 
-## Number of fruits
+## n_fruits
 
 ```{r}
-rdt %>% 
-  identify_outliers(n_fruits)
+trait <- "n_fruits"
 
-rdt %>%
-  plot_outlier(diagnose_outlier(rdt) %>% 
-                 filter(variables == "n_fruits") %>% 
-                 select(variables) %>% 
-                 unlist())
+lmm <- paste({{trait}}, "~ 1 + (1|block) + year + stock*edge + (1 + year|treat)") %>% as.formula()
 
-rdt_c <- rdt %>% 
-  outliers_remove(trait = "n_fruits"
-                  , model = "0 + (1|block) + treat*year"
-                  , drop_na = F
-                  ) %>% 
-  pluck(1)
+lmd <- paste({{trait}}, "~ block + year + stock*edge") %>% as.formula()
 
-model <- rdt_c %>% 
-  lm(n_fruits ~ block + treat + year + treat:year, .)
+rmout <- rdt %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+rmout$diagplot
 
-rdt_c %>% 
-  plot_raw(x = "treat", y = "n_fruits", group = "year")
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat") %>% 
-  separate(treat, c("treat", "year"))
+mc <- emmeans(model, ~ year|edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-p3 <- mc %>% 
-  plot_smr(x = "treat", type = "line"
-           , y = "n_fruits"
-           , group = "year"
-           , sig = "groups"
-           # , sigsize = 30
-           , ylimits = c(150, 275, 25)
-           , ylab = "Number of fruits (u)"
-           , xlab = "Treatment"
-           , glab = "Year"
-           , color = F
-           ) 
-
-p3
-
+p1c <- mc %>% 
+  plot_smr(type = "bar"
+           , x = "year"
+           , y = "emmean"
+           , group = "edge"
+           , sig = "group"
+           , error = "SE"
+           , color = T
+           , ylab = "N^{o} fruits"
+           , ylimits = c(0, 320, 60)
+           ) +
+  facet_wrap(. ~ stock, nrow = 2)
 ```
 
 ## Flowering
 
 ```{r}
-rdt %>% 
-  identify_outliers(flowering)
+trait <- "flowering"
 
-rdt %>%
-  plot_outlier(diagnose_outlier(rdt) %>% 
-                 filter(variables == "flowering") %>% 
-                 select(variables) %>% 
-                 unlist())
+lmm <- paste({{trait}}, "~ 1 + (1|block) + year + stock*edge + (1 + year|treat)") %>% as.formula()
 
-rdt_c <- rdt %>% 
-  outliers_remove(trait = "flowering"
-                  , model = "0 + (1|block) + treat*year"
-                  , drop_na = F
-                  ) %>% 
-  pluck(1)
+lmd <- paste({{trait}}, "~ block + year + stock*edge") %>% as.formula()
 
-model <- rdt_c %>% 
-  lm(flowering  ~ block + treat + year + treat:year, .)
+rmout <- rdt %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+rmout$diagplot
 
-rdt_c %>% 
-  plot_raw(x = "treat", y = "flowering", group = "year")
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("treat", "year")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat") %>% 
-  separate(treat, c("treat", "year"))
+mc <- emmeans(model, ~ year|edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-p4 <- mc %>% 
-  plot_smr(x = "treat",type = "line"
-           , y = "flowering"
-           , group = "year"
-           , sig = "groups"
-           , ylimits = c(40, 100, 10)
+p1d <- mc %>% 
+  plot_smr(type = "bar"
+           , x = "year"
+           , y = "emmean"
+           , group = "edge"
+           , sig = "group"
+           , error = "SE"
+           , color = T
            , ylab = "Flowering ('%')"
-           , xlab = "Treatment"
-           , glab = "Year"
-           # , sigsize = 80
-           , color = F
-           ) 
-
-p4
-
+           , ylimits = c(0, 120, 20)
+           ) +
+  facet_wrap(. ~ stock, nrow = 2)
 ```
 
 ## Figura 1
 
 ```{r}
-list(p1, p2, p3, p4) %>% 
+legend <- cowplot::get_plot_component(p1a, 'guide-box-top', return_all = TRUE)
+
+p1 <- list(p1a + theme(legend.position="none")
+           , p1b + theme(legend.position="none")
+           , p1c + theme(legend.position="none")
+           , p1d + theme(legend.position="none")
+           ) %>% 
   plot_grid(plotlist = ., ncol = 2
             , labels = "auto"
-            # , label_size = 80
-            ) %>% 
+            , rel_heights = c(1, 2)
+            ) 
+
+plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.1, 1)) %>% 
   ggsave2(plot = ., "files/Fig-1.jpg"
          , units = "cm"
-         , width = 21
-         , height = 13
-         , dpi = 200
+         , width = 24
+         , height = 16
          )
-
-
 ```
 
 ## Multivariate
 
 ```{r}
 mv <- rdt %>% 
-  group_by(treat) %>% 
-  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>% 
+  group_by(stock, edge) %>% 
+  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>%   
+  unite("treat", stock:edge, sep = "-") %>% 
    rename(Treat = treat
          , Height = height
          , Fruits = n_fruits
          , Flowering = flowering
          , Sproud = sproud)
   
-
 pca <- mv %>% 
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
 f2a <- plot.PCA(x = pca, choix = "var"
-                # , ggoptions = list(size = 15)
+                , cex=0.8
                 )
-  # theme(axis.title.x = element_text(size = 50),
-  #      axis.title.y = element_text(size = 50),
-  #      axis.text = element_text(size = 50),
-  #      legend.text = element_text(size = 50),
-  #      legend.title = element_text(size = 50),
-  #      plot.title = element_text(size = 50))
 
 f2b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
                 , invisible = c("ind")
-                # , ggoptions = list(size = 10)
+                , cex=0.8
                 ) 
 
 ```
-
-# Correlation
-
-```{r}
-
-M <- cor(mv[,-c(1)], method ="pearson")
-
-f2c <- corrplot(M, method = "number", type = "upper")
-
-class(f2c)
-
-```
-
 
 ## Figura 2
 
@@ -417,12 +352,31 @@ class(f2c)
 list(f2a, f2b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
-            # , label_size = 50
-            , rel_widths = c(1, 1.7)
+            , rel_widths = c(1, 1.5)
             ) %>% 
   ggsave2(plot = ., "files/Fig-2.jpg", units = "cm"
-         , width = 20, height = 9)
+         , width = 25, height = 10)
 ```
+
+# Correlation
+
+```{r}
+cor <- mv %>% 
+  dplyr::select(where(is.numeric)) %>% 
+  cor(., method ="pearson")
+
+sf1 <- ~ {
+  
+  corrplot::corrplot(cor, method = "number", type = "upper")
+}
+
+list(sf1) %>% 
+  plot_grid(plotlist = .) %>% 
+  ggsave2(plot = ., "files/FigS1.jpg", units = "cm"
+         , width = 15, height = 15)
+```
+
+
 
 
 # Obj. 2
