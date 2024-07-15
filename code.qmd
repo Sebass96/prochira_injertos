@@ -155,7 +155,7 @@ model <- rmout$data$clean %>%
 anova(model)
 
 mc <- emmeans(model, ~ edge|stock) %>%
-  cld(Letters = letters, reversed = T) %>%
+  cld(Letters = letters, reversed = F) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
@@ -309,7 +309,7 @@ p1 <- list(p1a + theme(legend.position="none")
             , rel_heights = c(1, 2)
             ) 
 
-plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.1, 1)) %>% 
+plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.05, 1)) %>% 
   ggsave2(plot = ., "files/Fig-1.jpg"
          , units = "cm"
          , width = 24
@@ -379,7 +379,6 @@ list(sf1) %>%
 
 
 
-
 # Obj. 2
 
 - Evaluar la calidad del fruto en la relación patron-injerto intermedio
@@ -387,43 +386,41 @@ list(sf1) %>%
 # Weigth
 
 ```{r}
-fru %>% 
-  identify_outliers(weigth)
+trait <- "weigth"
 
-fru %>%
-  plot_outlier(diagnose_outlier(fru) %>% 
-                 filter(variables == "weigth") %>% 
-                 select(variables) %>% 
-                 unlist())
+lmm <- paste({{trait}}, "~ 1 + (1|block) + stock*edge") %>% as.formula()
 
-model <- fru %>% 
-  lm(weigth  ~ block + stock*edge, .)
+lmd <- paste({{trait}}, "~ block + stock*edge") %>% as.formula()
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+rmout <- fru %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
 
-fru %>% 
-  plot_raw(x = "stock", y = "weigth", group = "edge")
+rmout$diagplot
+
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat")%>% 
-  separate(treat, c("stock", "edge"))
+mc <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-p5 <- mc %>% 
+p2a <- mc %>% 
   plot_smr(x = "stock"
-           , y = "weigth"
+           , y = "emmean"
            , group = "edge"
-           , sig = "groups"
+           , sig = "group"
+           , error = "SE"
+           , color = T
+           , ylab = "Fruit Weigth (cm)"
            , ylimits = c(0, 600, 100)
-           , ylab = "Fruit weigth (g)"
-           , xlab = "Treatment"
+           , 
            )
-
-p5
-
 
 ```
 
@@ -444,52 +441,46 @@ tb1 <- sts%>%
 
 # tb1 %>% write_sheet(ss = gs, sheet = "tb1")
 
-#write.table(tb1, file = "tabla1.csv", sep = ";", row.names = F)
-  
-# tb <- tb1 %>% 
-#   kbl(caption = "Statistics",
-#       align = "lccrr",
-#       col.names = c("Treat", "Stock", "Edge", "mean", "std", "min", "max", "Sig")) %>% 
-#   kable_classic(full_width = F, html_font = "Cambria")
-# 
-# tb
-
 ```
 
 # Long
 
 ```{r}
-fru %>% 
-  identify_outliers(long)
+trait <- "long"
 
-model <- fru %>% 
-  lm(long  ~ block + stock*edge, .)
+lmm <- paste({{trait}}, "~ 1 + (1|block) + stock*edge") %>% as.formula()
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+lmd <- paste({{trait}}, "~ block + stock*edge") %>% as.formula()
 
-fru %>% 
-  plot_raw(x = "stock", y = "long", group = "edge")
+rmout <- fru %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
+
+rmout$diagplot
+
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat")%>% 
-  separate(treat, c("stock", "edge"))
+mc <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-
-p6 <- mc %>% 
+p2b <- mc %>% 
   plot_smr(x = "stock"
-           , y = "long"
+           , y = "emmean"
            , group = "edge"
-           , sig = "groups"
+           , sig = "group"
+           , error = "SE"
+           , color = T
+           , ylab = "Fruit Weigth (cm)"
            , ylimits = c(0, 120, 20)
-           , ylab = "Fruit long (mm)"
-           , xlab = "Treatment"
+           , 
            )
-
-p6
 
 ```
 
@@ -512,40 +503,44 @@ tb2 <- sts%>%
 
 ```
  
-
 # Diameter
 
 ```{r}
-fru %>% 
-  identify_outliers(diameter_average)
+trait <- "diameter_average"
 
-model <- fru %>% 
-  lm(diameter_average ~ stock*edge, .)
+lmm <- paste({{trait}}, "~ 1 + (1|block) + stock*edge") %>% as.formula()
 
-plot_diag(model) %>% 
-  plot_grid(plotlist = ., ncol = 2)
+lmd <- paste({{trait}}, "~ block + stock*edge") %>% as.formula()
 
-fru %>% 
-  plot_raw(x = "stock", y = "diameter_average", group = "edge")
+rmout <- fru %>% 
+  remove_outliers(formula = lmm
+                  , drop_na = T, plot_diag = T)
+
+rmout$diagplot
+
+rmout$outliers
+
+model <- rmout$data$clean %>% 
+  aov(formula = lmd, .)
 
 anova(model)
 
-mc <- agricolae::duncan.test(model, trt = c("stock", "edge")) %>% 
-  pluck("groups") %>% 
-  rownames_to_column("treat")%>% 
-  separate(treat, c("stock", "edge"))
+mc <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>%
+  mutate(across(.group, trimws)) %>% 
+  rename(group = ".group")
 
-p7 <- mc %>% 
+p2c <- mc %>% 
   plot_smr(x = "stock"
-           , y = "diameter_average"
+           , y = "emmean"
            , group = "edge"
-           , sig = "groups"
+           , sig = "group"
+           , error = "SE"
+           , color = T
+           , ylab = "Fruit Diameter (cm)"
            , ylimits = c(0, 100, 20)
-           , ylab = "Fruit diameter (mm)"
-           , xlab = "Treatment"
+           , 
            )
-
-p7
 
 ```
 
@@ -571,21 +566,33 @@ tb3 %>% write_sheet(ss = gs, sheet = "tb3")
 # Figura 3
 
 ```{r}
-list(p5, p6, p7) %>% 
-  plot_grid(plotlist = ., ncol = 2
+legend <- cowplot::get_plot_component(p1a, 'guide-box-top', return_all = TRUE)
+
+p2 <- list(p2a + theme(legend.position="none")
+           , p2b + theme(legend.position="none")
+           , p1c + theme(legend.position="none")
+           ) %>% 
+  plot_grid(plotlist = ., ncol = 3
             , labels = "auto"
-            ) %>% 
-  ggsave(plot = ., "files/Fig-3.jpg", units = "cm"
-         , width = 25, height = 18)
+            , rel_heights = c(1, 2)
+            ) 
+
+plot_grid(legend, p2, nrow = 3, align = 'v', rel_heights = c(0.05, 1)) %>% 
+  ggsave2(plot = ., "files/Fig-3.jpg"
+         , units = "cm"
+         , width = 24
+         , height = 16
+         )
 ```
 
 ## Multivariate
 
 ```{r}
 mv <- fru %>% 
-  group_by(treat) %>% 
-  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>% 
-  dplyr::select(!c(diameter_1, diameter_2, n_fruits)) %>% 
+  group_by(stock, edge) %>% 
+  summarise(across(where(is.numeric), ~ mean(., na.rm = T))) %>%
+  dplyr::select(!c(diameter_1, diameter_2, n_fruits)) %>%
+  unite("treat", stock:edge, sep = "-") %>% 
    rename(Treat = treat
          , Weight = weigth
          , Length = long
@@ -595,14 +602,16 @@ pca <- mv %>%
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f4a <- plot.PCA(x = pca, choix = "var")
-
+f4a <- plot.PCA(x = pca, choix = "var"
+                , cex=0.8
+                )
 
 f4b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
-                , invisible = c("ind"))
-            
-
+                , invisible = c("ind")
+                , cex=0.8
+                ) 
+          
 ```
 
 # Correlation
@@ -630,12 +639,10 @@ f4c <- corrplot(M, method = "number", type = "upper")
 list(f4a, f4b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
-            # , label_size = 50
-            , rel_widths = c(1, 1.45)
+            , rel_widths = c(1, 1.5)
             ) %>% 
   ggsave2(plot = ., "files/Fig-4.jpg", units = "cm"
-         , width = 17
-         , height = 7
-         , dpi = 200)
+          , width = 25, height = 10
+          ) 
 ```
 
