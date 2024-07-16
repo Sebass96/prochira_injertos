@@ -36,17 +36,16 @@ source('https://inkaverse.com/setup.r')
 library(emmeans)
 library(multcomp)
 library(lmerTest)
+library(FSA)
 
 # library(rstatix)
 # library(corrplot)
 # library(dlookr)
-# library(FSA)
-
 
 session_info()
 ```
 
-# Importar datos
+# Import data
 
 ```{r}
 url <- "https://docs.google.com/spreadsheets/d/1E_cUmiRFoPLGAj7AQC6HZBD6hXtqzg2UHPvtWr2QR_U/edit#gid=2112492836"
@@ -121,18 +120,15 @@ sm <- fru %>%
 sm
 ```
 
-# Objetivos
+# Objetivo General
 
-- Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
+Evaluar el efecto del injerto intermedio sobre el crecimiento y productividad del mango (Mangifera indica L.) var. ‘Kent’. en el Valle de San Lorenzo
 
-- Evaluar la calidad del fruto en la relación patron-injerto intermedio
+# Objetivo Específico 1
 
+Evaluar el efecto de la relación patrón - injerto intermedio - injerto copa sobre las características agronómicas de altura de planta, número de frutos, porcentaje de floración y  porcentaje de brotación de la var. ‘Kent’
 
-# Objetivo. 1
-
-Determinar las caracteristicas agronómicas en la relación patron-injerto intermedio para las variables alt_planta	n_frutos	per_floracion, per_brotes
-
-## Height
+## Plant height
 
 ```{r}
 trait <- "height"
@@ -170,6 +166,8 @@ p1a <- mc %>%
            , ylimits = c(0, 6, 2)
            , 
            )
+
+p1a
 
 ```
 
@@ -210,9 +208,11 @@ p1b <- mc %>%
            , ylab = "Sproud ('%')"
            , ylimits = c(0, 100, 20)
            )
+
+p1b 
 ```
 
-## n_fruits
+## Number of fruits
 
 ```{r}
 trait <- "n_fruits"
@@ -251,6 +251,8 @@ p1c <- mc %>%
            , ylimits = c(0, 320, 60)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
+
+p1c 
 ```
 
 ## Flowering
@@ -292,9 +294,11 @@ p1d <- mc %>%
            , ylimits = c(0, 120, 20)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
+
+p1d
 ```
 
-## Figura 1
+## Figure 1
 
 ```{r}
 legend <- cowplot::get_plot_component(p1a, 'guide-box-top', return_all = TRUE)
@@ -346,7 +350,7 @@ f2b <- plot.PCA(x = pca, choix = "ind"
 
 ```
 
-## Figura 2
+## Figure 2
 
 ```{r}
 list(f2a, f2b) %>% 
@@ -378,12 +382,11 @@ list(sf1) %>%
 ```
 
 
+# Objetivo Específico 2
 
-# Obj. 2
+Evaluar el efecto de la relación patrón - injerto intermedio - injerto copa que sobre los parámetros que determinan la calidad del fruto (peso, longitud y diámetro) de la var. ‘Kent’
 
-- Evaluar la calidad del fruto en la relación patron-injerto intermedio
-
-# Weigth
+# Fruit Weigth
 
 ```{r}
 trait <- "weigth"
@@ -417,33 +420,31 @@ p2a <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , ylab = "Fruit Weigth (cm)"
+           , ylab = "Fruit Weigth (g)"
            , ylimits = c(0, 600, 100)
            , 
            )
 
+p2a
+
 ```
 
-# Tabla 1
+# Descriptive
 
 ```{r}
 sts <- Summarize(weigth  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
-tb1 <- sts%>% 
+tb1a <- sts%>% 
   merge(., mc) %>% 
-  select(stock, edge, mean, sd, min, max, groups) %>% 
-  mutate(treat = paste(stock,"x", edge)) %>% 
-   select(treat, everything()) %>% 
-  rename(Treat = treat,
-         Stock = stock,
+  mutate(Variable = "Fruit Weigth") %>% 
+  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
+  rename(Stock = stock,
          Edge = edge,
-         Sig = groups)
-
-# tb1 %>% write_sheet(ss = gs, sheet = "tb1")
+         Sig = group)
 
 ```
 
-# Long
+# Fruit length
 
 ```{r}
 trait <- "long"
@@ -477,33 +478,31 @@ p2b <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , ylab = "Fruit Weigth (cm)"
+           , ylab = "Fruit length (cm)"
            , ylimits = c(0, 120, 20)
            , 
            )
 
+p2b
+
 ```
 
-# Tabla 2
+# Descriptive
 
 ```{r}
 sts <- Summarize(long  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
-tb2 <- sts%>% 
+tb1b <- sts%>% 
   merge(., mc) %>% 
-  select(stock, edge, mean, sd, min, max, groups) %>% 
-  mutate(treat = paste(stock,"x", edge)) %>% 
-   select(treat, everything()) %>% 
-  rename(Treat = treat,
-         Stock = stock,
+  mutate(Variable = "Fruit length") %>% 
+  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
+  rename(Stock = stock,
          Edge = edge,
-         Sig = groups)
-
-#tb2 %>% write_sheet(ss = gs, sheet = "tb2")
+         Sig = group)
 
 ```
  
-# Diameter
+# Fruit diameter
 
 ```{r}
 trait <- "diameter_average"
@@ -537,53 +536,39 @@ p2c <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , ylab = "Fruit Diameter (cm)"
+           , ylab = "Fruit diameter (cm)"
            , ylimits = c(0, 100, 20)
            , 
            )
 
+p2c
+
 ```
 
-# Tabla 3
+# Descriptive
 
 ```{r}
 sts <- Summarize(diameter_average ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
-tb3 <- sts%>% 
+tb1c <- sts%>% 
   merge(., mc) %>% 
-  select(stock, edge, mean, sd, min, max, groups) %>% 
-  mutate(treat = paste(stock,"x", edge)) %>% 
-   select(treat, everything()) %>% 
-  rename(Treat = treat,
-         Stock = stock,
+  mutate(Variable = "Fruit diameter") %>% 
+  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
+  rename(Stock = stock,
          Edge = edge,
-         Sig = groups)
-
-tb3 %>% write_sheet(ss = gs, sheet = "tb3")
+         Sig = group)
 
 ```
 
-# Figura 3
+# Table 1
 
 ```{r}
-legend <- cowplot::get_plot_component(p1a, 'guide-box-top', return_all = TRUE)
+tb1 <- bind_rows(tb1a, tb1b, tb1c)
 
-p2 <- list(p2a + theme(legend.position="none")
-           , p2b + theme(legend.position="none")
-           , p1c + theme(legend.position="none")
-           ) %>% 
-  plot_grid(plotlist = ., ncol = 3
-            , labels = "auto"
-            , rel_heights = c(1, 2)
-            ) 
-
-plot_grid(legend, p2, nrow = 3, align = 'v', rel_heights = c(0.05, 1)) %>% 
-  ggsave2(plot = ., "files/Fig-3.jpg"
-         , units = "cm"
-         , width = 24
-         , height = 16
-         )
+# tb1 %>% 
+#   write_sheet(ss = gs, sheet = "tb1")
 ```
+
 
 ## Multivariate
 
@@ -602,11 +587,11 @@ pca <- mv %>%
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
 
-f4a <- plot.PCA(x = pca, choix = "var"
+f3a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
                 )
 
-f4b <- plot.PCA(x = pca, choix = "ind"
+f3b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
                 , invisible = c("ind")
                 , cex=0.8
@@ -614,35 +599,34 @@ f4b <- plot.PCA(x = pca, choix = "ind"
           
 ```
 
-# Correlation
+# Figure 3
 
 ```{r}
-mv %>% 
-  select(where(is.numeric)) %>% 
-  pairs.panels(.
-             , pch = 21
-             , method = "pearson"
-             , stars = T
-             , scale = F
-             , lm = T
-             ) 
-
-M <- cor(mv[,-c(1)], method ="pearson")
-
-f4c <- corrplot(M, method = "number", type = "upper")
-
-```
-
-# Figura 4
-
-```{r}
-list(f4a, f4b) %>% 
+list(f3a, f3b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
             , rel_widths = c(1, 1.5)
             ) %>% 
-  ggsave2(plot = ., "files/Fig-4.jpg", units = "cm"
+  ggsave2(plot = ., "files/Fig-3.jpg", units = "cm"
           , width = 25, height = 10
           ) 
 ```
 
+# Correlation
+
+```{r}
+cor <- mv %>% 
+  dplyr::select(where(is.numeric)) %>% 
+  cor(., method ="pearson")
+
+sf2 <- ~ {
+  
+  corrplot::corrplot(cor, method = "number", type = "upper")
+}
+
+list(sf2) %>% 
+  plot_grid(plotlist = .) %>% 
+  ggsave2(plot = ., "files/FigS2.jpg", units = "cm"
+         , width = 15, height = 15)
+
+```
