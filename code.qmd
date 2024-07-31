@@ -155,6 +155,8 @@ mc <- emmeans(model, ~ edge|stock) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
+mc %>% kable()
+
 p1a <- mc %>% 
   plot_smr(x = "stock"
            , y = "emmean"
@@ -198,6 +200,8 @@ mc <- emmeans(model, ~ edge|stock) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
+mc %>% kable()
+
 p1b <- mc %>% 
   plot_smr(x = "stock"
            , y = "emmean"
@@ -238,6 +242,8 @@ mc <- emmeans(model, ~ year|edge|stock) %>%
   cld(Letters = letters, reversed = T) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
+
+mc %>% kable()
 
 p1c <- mc %>% 
   plot_smr(type = "bar"
@@ -282,6 +288,8 @@ mc <- emmeans(model, ~ year|edge|stock) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
+mc %>% kable()
+
 p1d <- mc %>% 
   plot_smr(type = "bar"
            , x = "year"
@@ -319,6 +327,9 @@ plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.05, 1)) %>%
          , width = 24
          , height = 16
          )
+
+knitr::include_graphics("files/Fig-1.jpg")
+
 ```
 
 ## Multivariate
@@ -337,6 +348,9 @@ mv <- rdt %>%
 pca <- mv %>% 
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
+# summary
+
+summary(pca, nbelements = Inf, nb.dec = 2)
 
 f2a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
@@ -361,6 +375,9 @@ list(f2a, f2b) %>%
   ggsave2(plot = ., "files/Fig-2.jpg", units = "cm"
           , width = 25, height = 10
           ) 
+
+knitr::include_graphics("files/Fig-2.jpg")
+
 ```
 
 # Correlation
@@ -369,6 +386,8 @@ list(f2a, f2b) %>%
 cor <- mv %>% 
   dplyr::select(where(is.numeric)) %>% 
   cor(., method ="pearson")
+
+cor %>% kable()
 
 sf1 <- ~ {
   
@@ -379,6 +398,9 @@ list(sf1) %>%
   plot_grid(plotlist = .) %>% 
   ggsave2(plot = ., "files/FigS1.jpg", units = "cm"
          , width = 15, height = 15)
+
+knitr::include_graphics("files/FigS1.jpg")
+
 ```
 
 
@@ -412,6 +434,8 @@ mc <- emmeans(model, ~ edge|stock) %>%
   cld(Letters = letters, reversed = T) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
+
+mc %>% kable()
 
 p2a <- mc %>% 
   plot_smr(x = "stock"
@@ -471,6 +495,8 @@ mc <- emmeans(model, ~ edge|stock) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
+mc %>% kable()
+
 p2b <- mc %>% 
   plot_smr(x = "stock"
            , y = "emmean"
@@ -529,6 +555,8 @@ mc <- emmeans(model, ~ edge|stock) %>%
   mutate(across(.group, trimws)) %>% 
   rename(group = ".group")
 
+mc %>% kable()
+
 p2c <- mc %>% 
   plot_smr(x = "stock"
            , y = "emmean"
@@ -565,6 +593,8 @@ tb1c <- sts%>%
 ```{r}
 tb1 <- bind_rows(tb1a, tb1b, tb1c)
 
+tb1 %>% kable()
+
 # tb1 %>% 
 #   write_sheet(ss = gs, sheet = "tb1")
 ```
@@ -586,6 +616,9 @@ mv <- fru %>%
 pca <- mv %>% 
   PCA(scale.unit = T, quali.sup = 1, graph = F) 
 
+# summary
+
+summary(pca, nbelements = Inf, nb.dec = 2)
 
 f3a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
@@ -610,6 +643,9 @@ list(f3a, f3b) %>%
   ggsave2(plot = ., "files/Fig-3.jpg", units = "cm"
           , width = 25, height = 10
           ) 
+
+knitr::include_graphics("files/Fig-3.jpg")
+
 ```
 
 # Correlation
@@ -618,6 +654,8 @@ list(f3a, f3b) %>%
 cor <- mv %>% 
   dplyr::select(where(is.numeric)) %>% 
   cor(., method ="pearson")
+
+cor %>% kable()
 
 sf2 <- ~ {
   
@@ -628,5 +666,7 @@ list(sf2) %>%
   plot_grid(plotlist = .) %>% 
   ggsave2(plot = ., "files/FigS2.jpg", units = "cm"
          , width = 15, height = 15)
+
+knitr::include_graphics("files/FigS2.jpg")
 
 ```
