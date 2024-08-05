@@ -37,6 +37,9 @@ library(emmeans)
 library(multcomp)
 library(lmerTest)
 library(FSA)
+library(factoextra)
+library(corrplot)
+library(png)
 
 # library(rstatix)
 # library(corrplot)
@@ -401,6 +404,70 @@ list(sf1) %>%
 
 knitr::include_graphics("files/FigS1.jpg")
 
+```
+
+# Principal components
+
+```{r}
+var <- get_pca_var(pca)
+
+tmp <- tempfile(fileext = ".png")
+ppi <- 300
+png(tmp, width=3.8*ppi, height=10*ppi, res=ppi)
+corrplot(var$cor, 
+         method="number",
+         tl.col="black", 
+         tl.srt=45,)
+graphics.off()
+
+pt1 <- png::readPNG(tmp) %>%
+  grid::rasterGrob(interpolate = TRUE)
+
+pt2 <- fviz_eig(pca, 
+                addlabels=TRUE,
+                hjust = 0.05,
+                barfill="white",
+                barcolor ="darkblue",
+                linecolor ="red") + 
+  ylim(0, 80) + 
+  labs(
+    title = "PCA - percentage of explained variances",
+    y = "Variance (%)") +
+  theme_minimal()
+
+pt3 <- fviz_contrib(pca,
+                     choice = "var", 
+                     axes = 1, 
+                     top = 10,
+                     fill="white",
+                     color ="darkblue",
+                     sort.val = "desc") +
+  ylim(0, 50) + 
+  labs(title = "Dim 1 - variables contribution") 
+
+pt4 <- fviz_contrib(pca,
+                     choice = "var", 
+                     axes = 2, 
+                     top = 10,
+                     fill="white",
+                     color ="darkblue",
+                     sort.val = "desc") +
+  ylim(0, 80) + 
+  labs(title = "Dim 2 - variables contribution") 
+
+plot <- ggdraw(xlim = c(0.0, 1.0), ylim = c(0, 1.0))+
+  draw_plot(pt1,  width = 0.4, height = 0.99, x = 0.6, y = 0.0) +  
+  draw_plot(pt2,  width = 0.6, height = 0.34, x = 0.03, y = 0.66) +
+  draw_plot(pt3, width = 0.6, height = 0.34, x = 0.03, y = 0.33) + 
+  draw_plot(pt4, width = 0.6, height = 0.34, x = 0.03, y = 0.0) +
+        draw_plot_label(
+    label = c("a", "b", "c", "d"),
+    x = c(0.005, 0.005, 0.005, 0.65),
+    y = c(0.999, 0.67, 0.34, 0.999))
+
+ggsave2(plot = plot, "files/FigSs1.pdf", height = 25, width = 30, units = "cm")
+
+"files/FigSs1.pdf" %>% include_graphics()
 ```
 
 
