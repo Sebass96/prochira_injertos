@@ -27,15 +27,13 @@ if (!require("remotes"))
 remotes::install_github("flavjack/inti")
 ```
 
-
-
 ```{r}
 #| label:  setup
 
 source('https://inkaverse.com/setup.r')
 library(emmeans)
+library(corrplot)
 library(multcomp)
-library(lmerTest)
 library(FSA)
 library(factoextra)
 library(corrplot)
