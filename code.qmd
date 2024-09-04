@@ -1,6 +1,6 @@
 ---
-title: "Estudio del injerto intermedio sobre el crecimiento y productividad del mango (Mangífera indica L.) var.Kent.en el Valle de San Lorenzo"
-author: Sebastian Casas; Flavio Lozano-Isla
+title: "Estudio del injerto intermedio sobre el crecimiento y productividad del mango (_Mangífera indica_ L.) var.Kent.en el Valle de San Lorenzo"
+author: "Sebastian Casas-Niño; Henry Morocho-Romero; Ricardo Peña-Castillo; Sandy Vilchez-Navarro; Gabriela Cárdenas-Huamán; Nery Tirabante-Terrones; Esdwin-Oberti Nuñez-Ticliahunca;Ana Montañez-Artica; Leslie Velarde-Apaza; Max Ramirez-Rojas; Juancarlos Cruz; Flavio Lozano-Isla"
 format:
   html:
     toc: true
@@ -15,9 +15,9 @@ execute:
   echo: true
 ---
 
-# Setup
+# Project Setup
 
-Instalar la version en desarrollo
+Install *inti* development version.
 
 ```{r}
 #| eval: false
@@ -30,23 +30,21 @@ remotes::install_github("flavjack/inti")
 ```{r}
 #| label:  setup
 
-source('https://inkaverse.com/setup.r')
 library(emmeans)
 library(corrplot)
 library(multcomp)
 library(FSA)
 library(factoextra)
 library(corrplot)
-library(png)
+source('https://inkaverse.com/setup.r')
 
-# library(rstatix)
-# library(corrplot)
-# library(dlookr)
-
+cat("Project: ", getwd(), "\n")
 session_info()
 ```
 
 # Import data
+
+Data were imported from the field book evaluated during the 2017-2019 growing seasons. The evaluations focused on the agronomic characteristics and fruit quality of mango.
 
 ```{r}
 url <- "https://docs.google.com/spreadsheets/d/1E_cUmiRFoPLGAj7AQC6HZBD6hXtqzg2UHPvtWr2QR_U/edit#gid=2112492836"
@@ -355,6 +353,7 @@ summary(pca, nbelements = Inf, nb.dec = 2)
 
 f2a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
+                , label = "var"
                 )
 
 f2b <- plot.PCA(x = pca, choix = "ind"
