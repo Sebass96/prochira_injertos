@@ -103,7 +103,17 @@ fru <-  gs %>%
 glimpse(fru)
 ```
 
+```{r}
+ley %>% kable(caption = "Interstock grafting treatments", align = 'c')
+
+rdt %>% kable(caption = "Evaluation of the agronomic characteristics of mango", align = 'c')
+
+fru %>% kable(caption = "Evaluation of mango fruit quality", align = 'c')
+```
+
 # Data summary
+
+Summary of the number of data points recorded for each treatment and evaluated variable.
 
 ```{r}
 sm <- rdt %>% 
@@ -119,15 +129,15 @@ sm <- fru %>%
 sm
 ```
 
-# Objetivo General
+# Objetives
 
-Evaluar el efecto del injerto intermedio sobre el crecimiento y productividad del mango (Mangifera indica L.) var. ‘Kent’. en el Valle de San Lorenzo
+Evaluate the effect of interstock grafting on the growth and productivity of mango in the San Lorenzo Valley.
 
-# Objetivo Específico 1
+## Specific Objective 1
 
-Evaluar el efecto de la relación patrón - injerto intermedio - injerto copa sobre las características agronómicas de altura de planta, número de frutos, porcentaje de floración y  porcentaje de brotación de la var. ‘Kent’
+Determine the effect of interstock grafting on the agronomic characteristics of mango.
 
-## Plant height
+### Plant height
 
 ```{r}
 trait <- "height"
@@ -163,16 +173,17 @@ p1a <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Stock"
            , ylab = "Plant height (m)"
+           , glab = "Edge"
            , ylimits = c(0, 6, 2)
            , 
            )
 
 p1a
-
 ```
 
-## Sproud
+### Sproud
 
 ```{r}
 trait <- "sproud"
@@ -208,14 +219,16 @@ p1b <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Stock"
            , ylab = "Sproud ('%')"
+           , glab = "Edge"
            , ylimits = c(0, 100, 20)
            )
 
 p1b 
 ```
 
-## Number of fruits
+### Number of fruits
 
 ```{r}
 trait <- "n_fruits"
@@ -252,7 +265,9 @@ p1c <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , ylab = "N^{o} fruits"
+           , xlab = "Year"
+           , ylab = "Fruits number"
+           , glab = "Edge"
            , ylimits = c(0, 320, 60)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
@@ -260,7 +275,7 @@ p1c <- mc %>%
 p1c 
 ```
 
-## Flowering
+### Flowering
 
 ```{r}
 trait <- "flowering"
@@ -297,7 +312,9 @@ p1d <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Year"
            , ylab = "Flowering ('%')"
+           , glab = "Edge"
            , ylimits = c(0, 120, 20)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
@@ -305,7 +322,9 @@ p1d <- mc %>%
 p1d
 ```
 
-## Figure 1
+### Figure 1
+
+Univariate analysis of the variables that determine the agronomic characteristics of mango.
 
 ```{r}
 legend <- cowplot::get_plot_component(p1a, 'guide-box-top', return_all = TRUE)
@@ -320,18 +339,28 @@ p1 <- list(p1a + theme(legend.position="none")
             , rel_heights = c(1, 2)
             ) 
 
-plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.05, 1)) %>% 
+fig <- plot_grid(legend, p1, ncol = 1, align = 'v', rel_heights = c(0.05, 1))
+
+fig %>% 
   ggsave2(plot = ., "files/Fig-1.jpg"
          , units = "cm"
          , width = 24
          , height = 16
          )
 
-knitr::include_graphics("files/Fig-1.jpg")
+fig %>% 
+  ggsave2(plot = ., "files/Fig-1.eps"
+         , units = "cm"
+         , width = 24
+         , height = 16
+         )
 
+knitr::include_graphics("files/Fig-1.jpg")
 ```
 
-## Multivariate
+### Multivariate
+
+Principal Component Analysis (PCA) of agronomic characteristics to correlate with fruit production from interstock grafted mango.
 
 ```{r}
 mv <- rdt %>% 
@@ -361,66 +390,39 @@ f2b <- plot.PCA(x = pca, choix = "ind"
                 , invisible = c("ind")
                 , cex=0.8
                 ) 
-
 ```
 
-## Figure 2
+### Figure 2
+
+Principal Component Analysis (PCA).
 
 ```{r}
-list(f2a, f2b) %>% 
+fig <- list(f2a, f2b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
             , rel_widths = c(1, 1.5)
-            ) %>% 
+            ) 
+fig %>% 
   ggsave2(plot = ., "files/Fig-2.jpg", units = "cm"
           , width = 25, height = 10
           ) 
 
+fig %>% 
+  ggsave2(plot = ., "files/Fig-2.eps", units = "cm"
+          , width = 25, height = 10
+          ) 
+
 knitr::include_graphics("files/Fig-2.jpg")
-
 ```
 
-# Correlation
+### Supplementary Figure 1
 
-```{r}
-cor <- mv %>% 
-  dplyr::select(where(is.numeric)) %>% 
-  cor(., method ="pearson")
-
-cor %>% kable()
-
-sf1 <- ~ {
-  
-  corrplot::corrplot(cor, method = "number", type = "upper")
-}
-
-list(sf1) %>% 
-  plot_grid(plotlist = .) %>% 
-  ggsave2(plot = ., "files/FigS1.jpg", units = "cm"
-         , width = 15, height = 15)
-
-knitr::include_graphics("files/FigS1.jpg")
-
-```
-
-# Principal components
+Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
 
 ```{r}
 var <- get_pca_var(pca)
 
-tmp <- tempfile(fileext = ".png")
-ppi <- 300
-png(tmp, width=3.8*ppi, height=10*ppi, res=ppi)
-corrplot(var$cor, 
-         method="number",
-         tl.col="black", 
-         tl.srt=45,)
-graphics.off()
-
-pt1 <- png::readPNG(tmp) %>%
-  grid::rasterGrob(interpolate = TRUE)
-
-pt2 <- fviz_eig(pca, 
+pt1 <- fviz_eig(pca, 
                 addlabels=TRUE,
                 hjust = 0.05,
                 barfill="white",
@@ -432,7 +434,7 @@ pt2 <- fviz_eig(pca,
     y = "Variance (%)") +
   theme_minimal()
 
-pt3 <- fviz_contrib(pca,
+pt2 <- fviz_contrib(pca,
                      choice = "var", 
                      axes = 1, 
                      top = 10,
@@ -442,7 +444,7 @@ pt3 <- fviz_contrib(pca,
   ylim(0, 50) + 
   labs(title = "Dim 1 - variables contribution") 
 
-pt4 <- fviz_contrib(pca,
+pt3 <- fviz_contrib(pca,
                      choice = "var", 
                      axes = 2, 
                      top = 10,
@@ -452,27 +454,34 @@ pt4 <- fviz_contrib(pca,
   ylim(0, 80) + 
   labs(title = "Dim 2 - variables contribution") 
 
-plot <- ggdraw(xlim = c(0.0, 1.0), ylim = c(0, 1.0))+
-  draw_plot(pt1,  width = 0.4, height = 0.99, x = 0.6, y = 0.0) +  
-  draw_plot(pt2,  width = 0.6, height = 0.34, x = 0.03, y = 0.66) +
-  draw_plot(pt3, width = 0.6, height = 0.34, x = 0.03, y = 0.33) + 
-  draw_plot(pt4, width = 0.6, height = 0.34, x = 0.03, y = 0.0) +
-        draw_plot_label(
-    label = c("a", "b", "c", "d"),
-    x = c(0.005, 0.005, 0.005, 0.65),
-    y = c(0.999, 0.67, 0.34, 0.999))
+pt4 <- ~ {
+  
+  corrplot(var$cor, 
+         method="number",
+         tl.col="black", 
+         tl.srt=45,
+         )
+  
+}
 
-#ggsave2(plot = plot, "files/FigSs1.pdf", height = 25, width = 30, units = "cm")
+plot <- list(pt1, pt2, pt3) %>% 
+  plot_grid(plotlist = ., ncol = 1, labels = "auto") %>% 
+  list(., pt4) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
 
-"files/FigSs1.pdf" %>% include_graphics()
+
+ggsave2(plot = plot, "files/FigS1.jpg", height = 20, width = 28, units = "cm")
+
+ggsave2(plot = plot, "files/FigS1.eps", height = 20, width = 28, units = "cm")
+
+knitr::include_graphics("files/FigS1.jpg")
 ```
 
+## Specific Objective 2
 
-# Objetivo Específico 2
+Determine the effect of interstock grafting on mango fruit quality.
 
-Evaluar el efecto de la relación patrón - injerto intermedio - injerto copa que sobre los parámetros que determinan la calidad del fruto (peso, longitud y diámetro) de la var. ‘Kent’
-
-# Fruit Weigth
+### Fruit Weigth
 
 ```{r}
 trait <- "weigth"
@@ -508,31 +517,17 @@ p2a <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Stock"
            , ylab = "Fruit Weigth (g)"
+           , glab = "Edge"
            , ylimits = c(0, 600, 100)
            , 
            )
 
 p2a
-
 ```
 
-# Descriptive
-
-```{r}
-sts <- Summarize(weigth  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
-
-tb1a <- sts%>% 
-  merge(., mc) %>% 
-  mutate(Variable = "Fruit Weigth") %>% 
-  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
-  rename(Stock = stock,
-         Edge = edge,
-         Sig = group)
-
-```
-
-# Fruit length
+### Fruit length
 
 ```{r}
 trait <- "long"
@@ -568,31 +563,17 @@ p2b <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Stock"
            , ylab = "Fruit length (cm)"
+           , glab = "Edge"
            , ylimits = c(0, 120, 20)
            , 
            )
 
 p2b
-
 ```
 
-# Descriptive
-
-```{r}
-sts <- Summarize(long  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
-
-tb1b <- sts%>% 
-  merge(., mc) %>% 
-  mutate(Variable = "Fruit length") %>% 
-  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
-  rename(Stock = stock,
-         Edge = edge,
-         Sig = group)
-
-```
- 
-# Fruit diameter
+### Fruit diameter
 
 ```{r}
 trait <- "diameter_average"
@@ -628,43 +609,63 @@ p2c <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
+           , xlab = "Stock"
            , ylab = "Fruit diameter (cm)"
+           , glab = "Edge"
            , ylimits = c(0, 100, 20)
            , 
            )
 
 p2c
-
 ```
 
-# Descriptive
+### Table 1
+
+Descriptive statistics of the variables that determine mango fruit quality.
 
 ```{r}
-sts <- Summarize(diameter_average ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
-tb1c <- sts%>% 
+sts <- Summarize(weigth  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
+
+tb1a <- sts%>% 
   merge(., mc) %>% 
-  mutate(Variable = "Fruit diameter") %>% 
+  mutate(Variable = "Fruit Weigth (g)") %>% 
   dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
   rename(Stock = stock,
          Edge = edge,
          Sig = group)
 
-```
+sts <- Summarize(long  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
-# Table 1
+tb1b <- sts%>% 
+  merge(., mc) %>% 
+  mutate(Variable = "Fruit length (cm)") %>% 
+  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
+  rename(Stock = stock,
+         Edge = edge,
+         Sig = group)
 
-```{r}
+sts <- Summarize(diameter_average ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
+
+tb1c <- sts%>% 
+  merge(., mc) %>% 
+  mutate(Variable = "Fruit diameter (cm)") %>% 
+  dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
+  rename(Stock = stock,
+         Edge = edge,
+         Sig = group)
+
 tb1 <- bind_rows(tb1a, tb1b, tb1c)
 
-tb1 %>% kable()
+tb1 %>% kable(align = 'c')
 
-# tb1 %>% 
-#   write_sheet(ss = gs, sheet = "tb1")
+tb1 %>%
+  write_sheet(ss = gs, sheet = "tb1")
 ```
 
+### Multivariate
 
-## Multivariate
+Principal Component Analysis (PCA) of fruit quality to correlate with the yield of interstock grafted mango.
 
 ```{r}
 mv <- fru %>% 
@@ -693,44 +694,123 @@ f3b <- plot.PCA(x = pca, choix = "ind"
                 , invisible = c("ind")
                 , cex=0.8
                 ) 
-          
 ```
 
-# Figure 3
+### Figure 3
+
+Principal Component Analysis (PCA).
 
 ```{r}
-list(f3a, f3b) %>% 
+fig <- list(f3a, f3b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
             , rel_widths = c(1, 1.5)
-            ) %>% 
+            ) 
+fig %>% 
   ggsave2(plot = ., "files/Fig-3.jpg", units = "cm"
           , width = 25, height = 10
           ) 
 
-knitr::include_graphics("files/Fig-3.jpg")
+fig %>% 
+  ggsave2(plot = ., "files/Fig-3.eps", units = "cm"
+          , width = 25, height = 10
+          ) 
 
+knitr::include_graphics("files/Fig-3.jpg")
 ```
 
-# Correlation
+### Supplementary Figure 2
+
+Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
 
 ```{r}
-cor <- mv %>% 
-  dplyr::select(where(is.numeric)) %>% 
-  cor(., method ="pearson")
+var <- get_pca_var(pca)
 
-cor %>% kable()
+pt1 <- fviz_eig(pca, 
+                addlabels=TRUE,
+                hjust = 0.05,
+                barfill="white",
+                barcolor ="darkblue",
+                linecolor ="red") + 
+  ylim(0, 80) + 
+  labs(
+    title = "PCA - percentage of explained variances",
+    y = "Variance (%)") +
+  theme_minimal()
 
-sf2 <- ~ {
+pt2 <- fviz_contrib(pca,
+                     choice = "var", 
+                     axes = 1, 
+                     top = 10,
+                     fill="white",
+                     color ="darkblue",
+                     sort.val = "desc") +
+  ylim(0, 60) + 
+  labs(title = "Dim 1 - variables contribution") 
+
+pt3 <- fviz_contrib(pca,
+                     choice = "var", 
+                     axes = 2, 
+                     top = 10,
+                     fill="white",
+                     color ="darkblue",
+                     sort.val = "desc") +
+  ylim(0, 100) + 
+  labs(title = "Dim 2 - variables contribution") 
+
+pt4 <- ~ {
   
-  corrplot::corrplot(cor, method = "number", type = "upper")
+  corrplot(var$cor, 
+         method="number",
+         tl.col="black", 
+         tl.srt=45,
+         )
+  
 }
 
-list(sf2) %>% 
-  plot_grid(plotlist = .) %>% 
-  ggsave2(plot = ., "files/FigS2.jpg", units = "cm"
-         , width = 15, height = 15)
+plot <- list(pt1, pt2, pt3) %>% 
+  plot_grid(plotlist = ., ncol = 1, labels = "auto") %>% 
+  list(., pt4) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
+
+
+ggsave2(plot = plot, "files/FigS2.jpg", height = 20, width = 30, units = "cm")
+
+ggsave2(plot = plot, "files/FigS2.eps", height = 20, width = 30, units = "cm")
 
 knitr::include_graphics("files/FigS2.jpg")
+```
 
+# Meteorological data
+
+Climatic conditions of the study area located in the Tambogrande district, Piura region.
+
+```{r}
+met <- range_read(ss = gs, sheet = "clima") %>% 
+  mutate(date = as_date(Fecha))
+
+scale <- 3
+
+plot <- met %>% 
+  ggplot(aes(x = date)) +
+  geom_line(aes(y = TMax, color = "Tmax (°C)"), size= 0.8) + 
+  geom_line(aes(y = TMin, color = "Tmin (°C)"), size= 0.8) +
+  geom_bar(aes(y = PP/scale)
+            , stat="identity", size=.1, fill="blue", color="black", alpha=.4) +
+  geom_line(aes(y = HR/scale, color = "HR (%)"), size = 0.8) +
+  scale_color_manual("", values = c("skyblue", "red", "blue")) +
+  scale_y_continuous(limits = c(0, 40)
+                     , expand = c(0, 0)
+                     , name = "Temperature (°C)"
+                     , sec.axis = sec_axis(~ . * scale, name = "Precipitation (mm)")
+                     ) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m-%Y", name = NULL) +
+  theme_minimal_grid() +
+  theme(legend.position = "top")
+
+plot %>% 
+  ggsave2(plot = ., "agronomy/weather.jpg", units = "cm"
+         , width = 25, height = 15)
+
+knitr::include_graphics("agronomy/weather.jpg")
 ```
