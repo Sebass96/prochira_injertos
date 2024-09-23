@@ -1,6 +1,6 @@
 ---
 title: "Estudio del injerto intermedio sobre el crecimiento y productividad del mango (_Mangífera indica_ L.) var.Kent.en el Valle de San Lorenzo"
-author: "Sebastian Casas-Niño; Henry Morocho-Romero; Ricardo Peña-Castillo; Sandy Vilchez-Navarro; Gabriela Cárdenas-Huamán; Nery Tirabante-Terrones; Esdwin-Oberti Nuñez-Ticliahunca;Ana Montañez-Artica; Leslie Velarde-Apaza; Max Ramirez-Rojas; Juancarlos Cruz; Flavio Lozano-Isla"
+author: " "
 format:
   html:
     toc: true
