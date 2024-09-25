@@ -44,7 +44,7 @@ session_info()
 
 # Import data
 
-Data were imported from the field book evaluated during the 2017-2019 growing seasons. The evaluations focused on the agronomic characteristics and fruit quality of mango.
+Data were imported from the field book evaluated during the 2017-2019 growing seasons. The evaluations focused on the agronomic traits and fruit biometrics of the mango crop.
 
 ```{r}
 url <- "https://docs.google.com/spreadsheets/d/1E_cUmiRFoPLGAj7AQC6HZBD6hXtqzg2UHPvtWr2QR_U/edit#gid=2112492836"
@@ -131,11 +131,11 @@ sm
 
 # Objetives
 
-Evaluate the effect of interstock grafting on the growth and productivity of mango in the San Lorenzo Valley.
+Evaluate the effect of the rootstock-interstock interaction on the agronomic traits and fruit biometrics of the mango crop in the San Lorenzo Valley.
 
 ## Specific Objective 1
 
-Determine the effect of interstock grafting on the agronomic characteristics of mango.
+Determine the effect of the rootstock-interstock interaction on the agronomic characteristics of mango.
 
 ### Plant height
 
@@ -173,9 +173,9 @@ p1a <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , xlab = "Stock"
+           , xlab = "Rootstock"
            , ylab = "Plant height (m)"
-           , glab = "Edge"
+           , glab = "Interstock"
            , ylimits = c(0, 6, 2)
            , 
            )
@@ -219,9 +219,9 @@ p1b <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , xlab = "Stock"
+           , xlab = "Rootstock"
            , ylab = "Sproud ('%')"
-           , glab = "Edge"
+           , glab = "Interstock"
            , ylimits = c(0, 100, 20)
            )
 
@@ -267,7 +267,7 @@ p1c <- mc %>%
            , color = T
            , xlab = "Year"
            , ylab = "Fruits number"
-           , glab = "Edge"
+           , glab = "Interstock"
            , ylimits = c(0, 320, 60)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
@@ -314,7 +314,7 @@ p1d <- mc %>%
            , color = T
            , xlab = "Year"
            , ylab = "Flowering ('%')"
-           , glab = "Edge"
+           , glab = "Interstock"
            , ylimits = c(0, 120, 20)
            ) +
   facet_wrap(. ~ stock, nrow = 2)
@@ -360,7 +360,7 @@ knitr::include_graphics("files/Fig-1.jpg")
 
 ### Multivariate
 
-Principal Component Analysis (PCA) of agronomic characteristics to correlate with fruit production from interstock grafted mango.
+Principal Component Analysis (PCA) of agronomic traits in the mango crop based on the use of rootstock-interstock combinations.
 
 ```{r}
 mv <- rdt %>% 
@@ -479,7 +479,7 @@ knitr::include_graphics("files/FigS1.jpg")
 
 ## Specific Objective 2
 
-Determine the effect of interstock grafting on mango fruit quality.
+Determine the effect of the rootstock-interstock interaction on the fruit biometrics of mango.
 
 ### Fruit Weigth
 
@@ -517,9 +517,9 @@ p2a <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , xlab = "Stock"
+           , xlab = "Rootstock"
            , ylab = "Fruit Weigth (g)"
-           , glab = "Edge"
+           , glab = "Interstock"
            , ylimits = c(0, 600, 100)
            , 
            )
@@ -563,9 +563,9 @@ p2b <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , xlab = "Stock"
-           , ylab = "Fruit length (cm)"
-           , glab = "Edge"
+           , xlab = "Rootstock"
+           , ylab = "Fruit length (mm)"
+           , glab = "Interstock"
            , ylimits = c(0, 120, 20)
            , 
            )
@@ -609,9 +609,9 @@ p2c <- mc %>%
            , sig = "group"
            , error = "SE"
            , color = T
-           , xlab = "Stock"
-           , ylab = "Fruit diameter (cm)"
-           , glab = "Edge"
+           , xlab = "Rootstock"
+           , ylab = "Fruit diameter (mm)"
+           , glab = "Interstock"
            , ylimits = c(0, 100, 20)
            , 
            )
@@ -621,7 +621,7 @@ p2c
 
 ### Table 1
 
-Descriptive statistics of the variables that determine mango fruit quality.
+Descriptive statistics of the variables that determine the fruit biometrics of mango.
 
 ```{r}
 
@@ -631,28 +631,28 @@ tb1a <- sts%>%
   merge(., mc) %>% 
   mutate(Variable = "Fruit Weigth (g)") %>% 
   dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
-  rename(Stock = stock,
-         Edge = edge,
+  rename(Rootstock = stock,
+         Interstock = edge,
          Sig = group)
 
 sts <- Summarize(long  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
 tb1b <- sts%>% 
   merge(., mc) %>% 
-  mutate(Variable = "Fruit length (cm)") %>% 
+  mutate(Variable = "Fruit length (mm)") %>% 
   dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
-  rename(Stock = stock,
-         Edge = edge,
+  rename(Rootstock = stock,
+         Interstock = edge,
          Sig = group)
 
 sts <- Summarize(diameter_average ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
 tb1c <- sts%>% 
   merge(., mc) %>% 
-  mutate(Variable = "Fruit diameter (cm)") %>% 
+  mutate(Variable = "Fruit diameter (mm)") %>% 
   dplyr::select(Variable, stock, edge, mean, sd, min, max, group) %>% 
-  rename(Stock = stock,
-         Edge = edge,
+  rename(Rootstock = stock,
+         Interstock = edge,
          Sig = group)
 
 tb1 <- bind_rows(tb1a, tb1b, tb1c)
@@ -665,7 +665,7 @@ tb1 %>%
 
 ### Multivariate
 
-Principal Component Analysis (PCA) of fruit quality to correlate with the yield of interstock grafted mango.
+Principal Component Analysis (PCA) of fruit biometrics in the mango crop based on the use of rootstock-interstock combinations.
 
 ```{r}
 mv <- fru %>% 
@@ -731,7 +731,7 @@ pt1 <- fviz_eig(pca,
                 hjust = 0.05,
                 barfill="white",
                 barcolor ="darkblue",
-                linecolor ="red") + 
+                linecolor = "white") + 
   ylim(0, 80) + 
   labs(
     title = "PCA - percentage of explained variances",
