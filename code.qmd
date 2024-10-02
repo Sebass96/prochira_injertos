@@ -1,5 +1,5 @@
 ---
-title: "Impact of Interstock and Rootstock on the Vigor and Productive Development of Mango (Mangifera indica L.) in the San Lorenzo Valley, Piura, Peru"
+title: "Impact of Interstock and Rootstock on the Vigor and Productive Development of Mango (*Mangifera indica* L.) in San Lorenzo Valley, Piura, Peru."
 format:
   html:
     toc: true
@@ -15,16 +15,6 @@ execute:
 ---
 
 # Project Setup
-
-Install *inti* development version.
-
-```{r}
-#| eval: false
-
-if (!require("remotes"))
-  install.packages("remotes")
-remotes::install_github("flavjack/inti")
-```
 
 ```{r}
 #| label:  setup
