@@ -1,5 +1,5 @@
 ---
-title: "Impact of Interstock and Rootstock on the Vigor and Productive Development of Mango (*Mangifera indica* L.) in San Lorenzo Valley, Piura, Peru."
+title: "Impact of Interstock and Rootstock on the Growth and Productivity of Mango (_Mangifera indica_ L.) in the San Lorenzo Valley, Peru"
 format:
   html:
     toc: true
