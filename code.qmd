@@ -18,7 +18,6 @@ execute:
 
 ```{r}
 #| label:  setup
-
 library(emmeans)
 library(corrplot)
 library(multcomp)
