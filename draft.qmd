@@ -42,7 +42,7 @@ crossref:
 
 source("http://inkaverse.com/docs.r")
 doc <- inti::gdoc2qmd(file = "_draft.zip"
-                      , type = "listfull"
+                      # , type = "listfull"
                       )
 params <- doc$params
 ```
