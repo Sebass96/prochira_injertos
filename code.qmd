@@ -186,10 +186,19 @@ model <- rmout$data$clean %>%
 
 anova(model)
 
-mc <- emmeans(model, ~ edge|stock) %>%
-  cld(Letters = letters, reversed = F) %>%
-  mutate(across(.group, trimws)) %>% 
-  rename(group = ".group")
+mc1 <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  rename(sig1 = ".group")
+
+mc2 <- emmeans(model, ~ stock|edge) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  mutate(across(".group", ~ toupper(.))) %>% 
+  rename(sig2 = ".group")
+
+mc <- merge(mc2, mc1) %>% 
+  unite(col = "group", c("sig2", "sig1"), sep = "")
 
 mc %>% kable()
 
@@ -277,10 +286,24 @@ model <- rmout$data$clean %>%
 
 anova(model)
 
-mc <- emmeans(model, ~ year|edge|stock) %>%
-  cld(Letters = letters, reversed = T) %>%
-  mutate(across(.group, trimws)) %>% 
-  rename(group = ".group")
+mc1 <- emmeans(model, ~ edge|stock|year) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  rename(sig1 = ".group")
+
+emmeans(model, ~ year|edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  rename(sig1 = ".group")
+
+mc2 <- emmeans(model, ~ stock|edge|year) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  mutate(across(".group", ~ toupper(.))) %>% 
+  rename(sig2 = ".group")
+
+mc <- merge(mc2, mc1) %>% 
+  unite(col = "group", c("sig2", "sig1"), sep = "")
 
 mc %>% kable()
 
@@ -427,7 +450,7 @@ Principal Component Analysis (PCA).
 fig <- list(f2a, f2b) %>% 
   plot_grid(plotlist = ., ncol = 2, nrow = 1
             , labels = "auto"
-            , rel_widths = c(1, 1.5)
+            , rel_widths = c(1, 1.8)
             ) 
 fig %>% 
   ggsave2(plot = ., "submission/Figure_4.jpg", units = "cm"
@@ -491,13 +514,68 @@ pt4 <- ~ {
   
 }
 
+png("corrplot_output.png", width = 800, height = 800, res = 150)  # Abre el dispositivo gráfico
+corrplot(var$cor, 
+         method = "number",
+         tl.col = "black", 
+         tl.srt = 45)
+dev.off()
+
+img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
+
+p2 <- img_corrplot
+
 plot <- list(pt1, pt2, pt3) %>% 
-  plot_grid(plotlist = ., ncol = 1, labels = "auto") %>% 
-  list(., pt4) %>% 
+  plot_grid(plotlist = ., ncol = 1, labels = "c") %>% 
+  list(., p2) %>% 
   plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
 
+plot <- list(f2a, f2b) %>% 
+  plot_grid(plotlist = ., ncol = 2, nrow = 1
+            , labels = "auto"
+            , rel_widths = c(1, 1.5)
+            ) %>% 
+  list(pt1, pt2, pt3) %>% 
+  plot_grid(plotlist = ., ncol = 1, labels = "c") %>% 
+  list(., p2) %>% 
+  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
 
-ggsave2(plot = plot, "submission/FigS1.jpg", height = 20, width = 28, units = "cm")
+library(magrittr)
+
+# Paso 1: Crear la primera fila (f2a y f2b con igual ancho)
+fila1 <- plot_grid(
+  plotlist = list(f2a, f2b),
+  ncol = 2, nrow = 1,
+  labels = "auto",
+  rel_widths = c(1, 1.5)  # Ambos gráficos con el mismo ancho
+)
+
+# Paso 2: Apilar pt1, pt2 y pt3 en una columna
+columna_c <- plot_grid(
+  plotlist = list(pt1, pt2, pt3),
+  ncol = 1,
+  labels = "c"
+)
+
+# Paso 3: Juntar columna_c con p2 asegurando igualdad de anchos
+fila2 <- plot_grid(
+  plotlist = list(columna_c, p2),
+  ncol = 2,
+  labels = c("", "d"),
+  rel_widths = c(1, 1),  # Ambos gráficos con el mismo ancho
+)
+
+# Paso 4: Unir ambas filas en un grid final 2x2 con proporciones iguales
+grid_final <- plot_grid(
+  fila1, fila2,
+  ncol = 1,  # Dos filas
+  rel_heights = c(1, 1.2)  # Ambas filas con el mismo alto
+)
+
+# Mostrar el grid final
+grid_final
+
+ggsave2(plot = grid_final, "submission/FigS1.jpg", height = 30, width = 28, units = "cm")
 
 ggsave2(plot = plot, "submission/FigS1.eps", height = 20, width = 28, units = "cm")
 
