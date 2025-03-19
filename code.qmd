@@ -24,6 +24,7 @@ library(multcomp)
 library(FSA)
 library(factoextra)
 library(corrplot)
+library(magrittr)
 source('https://inkaverse.com/setup.r')
 
 cat("Project: ", getwd(), "\n")
@@ -241,10 +242,19 @@ model <- rmout$data$clean %>%
 
 anova(model)
 
-mc <- emmeans(model, ~ edge|stock) %>%
-  cld(Letters = letters, reversed = T) %>%
-  mutate(across(.group, trimws)) %>% 
-  rename(group = ".group")
+mc1 <- emmeans(model, ~ edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  rename(sig1 = ".group")
+
+mc2 <- emmeans(model, ~ stock|edge) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  mutate(across(".group", ~ toupper(.))) %>% 
+  rename(sig2 = ".group")
+
+mc <- merge(mc2, mc1) %>% 
+  unite(col = "group", c("sig2", "sig1"), sep = "")
 
 mc %>% kable()
 
@@ -291,12 +301,7 @@ mc1 <- emmeans(model, ~ edge|stock|year) %>%
   mutate(across(".group", ~ trimws(.))) %>% 
   rename(sig1 = ".group")
 
-emmeans(model, ~ year|edge|stock) %>%
-  cld(Letters = letters, reversed = T) %>% 
-  mutate(across(".group", ~ trimws(.))) %>% 
-  rename(sig1 = ".group")
-
-mc2 <- emmeans(model, ~ stock|edge|year) %>%
+mc2 <- emmeans(model, ~ year|edge|stock) %>%
   cld(Letters = letters, reversed = T) %>% 
   mutate(across(".group", ~ trimws(.))) %>% 
   mutate(across(".group", ~ toupper(.))) %>% 
@@ -347,10 +352,19 @@ model <- rmout$data$clean %>%
 
 anova(model)
 
-mc <- emmeans(model, ~ year|edge|stock) %>%
-  cld(Letters = letters, reversed = T) %>%
-  mutate(across(.group, trimws)) %>% 
-  rename(group = ".group")
+mc1 <- emmeans(model, ~ edge|stock|year) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  rename(sig1 = ".group")
+
+mc2 <- emmeans(model, ~ year|edge|stock) %>%
+  cld(Letters = letters, reversed = T) %>% 
+  mutate(across(".group", ~ trimws(.))) %>% 
+  mutate(across(".group", ~ toupper(.))) %>% 
+  rename(sig2 = ".group")
+
+mc <- merge(mc2, mc1) %>% 
+  unite(col = "group", c("sig2", "sig1"), sep = "")
 
 mc %>% kable()
 
@@ -525,22 +539,11 @@ img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
 
 p2 <- img_corrplot
 
-plot <- list(pt1, pt2, pt3) %>% 
-  plot_grid(plotlist = ., ncol = 1, labels = "c") %>% 
-  list(., p2) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
+if (!inherits(p2, "gg")) {
+  p2 <- ggdraw() + draw_image("corrplot_output.png")
+}
 
-plot <- list(f2a, f2b) %>% 
-  plot_grid(plotlist = ., ncol = 2, nrow = 1
-            , labels = "auto"
-            , rel_widths = c(1, 1.5)
-            ) %>% 
-  list(pt1, pt2, pt3) %>% 
-  plot_grid(plotlist = ., ncol = 1, labels = "c") %>% 
-  list(., p2) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
-
-library(magrittr)
+class(p2)
 
 # Paso 1: Crear la primera fila (f2a y f2b con igual ancho)
 fila1 <- plot_grid(
