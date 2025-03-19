@@ -444,12 +444,12 @@ pca <- mv %>%
 
 summary(pca, nbelements = Inf, nb.dec = 2)
 
-f2a <- plot.PCA(x = pca, choix = "var"
+f4a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
                 , label = "var"
                 )
 
-f2b <- plot.PCA(x = pca, choix = "ind"
+f4b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
                 , invisible = c("ind")
                 , cex=0.8
@@ -458,30 +458,7 @@ f2b <- plot.PCA(x = pca, choix = "ind"
 
 ### Figure 4
 
-Principal Component Analysis (PCA).
-
-```{r}
-fig <- list(f2a, f2b) %>% 
-  plot_grid(plotlist = ., ncol = 2, nrow = 1
-            , labels = "auto"
-            , rel_widths = c(1, 1.8)
-            ) 
-fig %>% 
-  ggsave2(plot = ., "submission/Figure_4.jpg", units = "cm"
-          , width = 25, height = 10
-          ) 
-
-fig %>% 
-  ggsave2(plot = ., "submission/Figure_4.eps", units = "cm"
-          , width = 25, height = 10
-          ) 
-
-knitr::include_graphics("submission/Figure_4.jpg")
-```
-
-### Supplementary Figure 1
-
-Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
+Principal Component Analysis (PCA). Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
 
 ```{r}
 var <- get_pca_var(pca)
@@ -518,17 +495,7 @@ pt3 <- fviz_contrib(pca,
   ylim(0, 80) + 
   labs(title = "Dim 2 - variables contribution") 
 
-pt4 <- ~ {
-  
-  corrplot(var$cor, 
-         method="number",
-         tl.col="black", 
-         tl.srt=45,
-         )
-  
-}
-
-png("corrplot_output.png", width = 800, height = 800, res = 150)  # Abre el dispositivo gráfico
+png("corrplot_output.png", width = 800, height = 800, res = 150)  
 corrplot(var$cor, 
          method = "number",
          tl.col = "black", 
@@ -537,52 +504,25 @@ dev.off()
 
 img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
 
-p2 <- img_corrplot
+pt4 <- img_corrplot
 
-if (!inherits(p2, "gg")) {
-  p2 <- ggdraw() + draw_image("corrplot_output.png")
-}
+# Construcción del grid
+fila1 <- plot_grid(f4a, f4b, ncol = 2, labels = "auto", rel_widths = c(1, 1.5))
 
-class(p2)
+columna_c <- plot_grid(pt1, pt2, pt3, ncol = 1, labels = "c")
 
-# Paso 1: Crear la primera fila (f2a y f2b con igual ancho)
-fila1 <- plot_grid(
-  plotlist = list(f2a, f2b),
-  ncol = 2, nrow = 1,
-  labels = "auto",
-  rel_widths = c(1, 1.5)  # Ambos gráficos con el mismo ancho
-)
+fila2 <- plot_grid(columna_c, pt4, ncol = 2, labels = c("", "d"), rel_widths = c(1, 1))
 
-# Paso 2: Apilar pt1, pt2 y pt3 en una columna
-columna_c <- plot_grid(
-  plotlist = list(pt1, pt2, pt3),
-  ncol = 1,
-  labels = "c"
-)
+grid_final <- plot_grid(fila1, fila2, ncol = 1, rel_heights = c(1, 1.2))
 
-# Paso 3: Juntar columna_c con p2 asegurando igualdad de anchos
-fila2 <- plot_grid(
-  plotlist = list(columna_c, p2),
-  ncol = 2,
-  labels = c("", "d"),
-  rel_widths = c(1, 1),  # Ambos gráficos con el mismo ancho
-)
-
-# Paso 4: Unir ambas filas en un grid final 2x2 con proporciones iguales
-grid_final <- plot_grid(
-  fila1, fila2,
-  ncol = 1,  # Dos filas
-  rel_heights = c(1, 1.2)  # Ambas filas con el mismo alto
-)
-
-# Mostrar el grid final
 grid_final
 
-ggsave2(plot = grid_final, "submission/FigS1.jpg", height = 30, width = 28, units = "cm")
 
-ggsave2(plot = plot, "submission/FigS1.eps", height = 20, width = 28, units = "cm")
+ggsave2(plot = grid_final, "submission/Figure_4.jpg", height = 30, width = 28, units = "cm")
 
-knitr::include_graphics("submission/FigS1.jpg")
+ggsave2(plot = grid_final, "submission/Figure_4.eps", height = 30, width = 28, units = "cm")
+
+knitr::include_graphics("submission/Figure_4.jpg")
 ```
 
 ## Specific Objective 2
@@ -793,11 +733,11 @@ pca <- mv %>%
 
 summary(pca, nbelements = Inf, nb.dec = 2)
 
-f3a <- plot.PCA(x = pca, choix = "var"
+f5a <- plot.PCA(x = pca, choix = "var"
                 , cex=0.8
                 )
 
-f3b <- plot.PCA(x = pca, choix = "ind"
+f5b <- plot.PCA(x = pca, choix = "ind"
                 , habillage = 1
                 , invisible = c("ind")
                 , cex=0.8
@@ -806,30 +746,7 @@ f3b <- plot.PCA(x = pca, choix = "ind"
 
 ### Figure 5
 
-Principal Component Analysis (PCA).
-
-```{r}
-fig <- list(f3a, f3b) %>% 
-  plot_grid(plotlist = ., ncol = 2, nrow = 1
-            , labels = "auto"
-            , rel_widths = c(1, 1.5)
-            ) 
-fig %>% 
-  ggsave2(plot = ., "submission/Figure_5.jpg", units = "cm"
-          , width = 25, height = 10
-          ) 
-
-fig %>% 
-  ggsave2(plot = ., "submission/Figure_5.eps", units = "cm"
-          , width = 25, height = 10
-          ) 
-
-knitr::include_graphics("submission/Figure_5.jpg")
-```
-
-### Supplementary Figure 2
-
-Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
+Principal Component Analysis (PCA). Results of the contributions and correlation of the variables in the Principal Component Analysis (PCA).
 
 ```{r}
 var <- get_pca_var(pca)
@@ -839,7 +756,7 @@ pt1 <- fviz_eig(pca,
                 hjust = 0.05,
                 barfill="white",
                 barcolor ="darkblue",
-                linecolor = "white") + 
+                linecolor ="white") + 
   ylim(0, 80) + 
   labs(
     title = "PCA - percentage of explained variances",
@@ -866,26 +783,32 @@ pt3 <- fviz_contrib(pca,
   ylim(0, 100) + 
   labs(title = "Dim 2 - variables contribution") 
 
-pt4 <- ~ {
-  
-  corrplot(var$cor, 
-         method="number",
-         tl.col="black", 
-         tl.srt=45,
-         )
-  
-}
+png("corrplot_output.png", width = 800, height = 800, res = 150)  
+corrplot(var$cor, 
+         method = "number",
+         tl.col = "black", 
+         tl.srt = 45)
+dev.off()
 
-plot <- list(pt1, pt2, pt3) %>% 
-  plot_grid(plotlist = ., ncol = 1, labels = "auto") %>% 
-  list(., pt4) %>% 
-  plot_grid(plotlist = ., ncol = 2, labels = c("", "d"))
+img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
+
+pt4 <- img_corrplot
+
+# Construcción del grid
+fila1 <- plot_grid(f5a, f5b, ncol = 2, labels = "auto", rel_widths = c(1, 1.2))
+
+columna_c <- plot_grid(pt1, pt2, pt3, ncol = 1, labels = "c")
+
+fila2 <- plot_grid(columna_c, pt4, ncol = 2, labels = c("", "d"), rel_widths = c(1, 1))
+
+grid_final <- plot_grid(fila1, fila2, ncol = 1, rel_heights = c(1, 1.2))
+
+grid_final
 
 
-ggsave2(plot = plot, "submission/FigS2.jpg", height = 20, width = 30, units = "cm")
+ggsave2(plot = grid_final, "submission/Figure_5.jpg", height = 30, width = 28, units = "cm")
 
-ggsave2(plot = plot, "submission/FigS2.eps", height = 20, width = 30, units = "cm")
+ggsave2(plot = grid_final, "submission/Figure_5.eps", height = 30, width = 28, units = "cm")
 
-knitr::include_graphics("submission/FigS2.jpg")
+knitr::include_graphics("submission/Figure_5.jpg")
 ```
-
