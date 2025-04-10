@@ -507,6 +507,7 @@ img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
 pt4 <- img_corrplot
 
 # Construcción del grid
+
 fila1 <- plot_grid(f4a, f4b, ncol = 2, labels = "auto", rel_widths = c(1, 1.5))
 
 columna_c <- plot_grid(pt1, pt2, pt3, ncol = 1, labels = "c")
@@ -672,7 +673,6 @@ p2c
 Descriptive statistics of the variables that determine the fruit biometrics of mango.
 
 ```{r}
-
 sts <- Summarize(weigth  ~ stock*edge, data = fru, digits = 2, na.rm = TRUE)
 
 tb1a <- sts%>% 
@@ -795,6 +795,7 @@ img_corrplot <- ggdraw() + draw_image("corrplot_output.png")
 pt4 <- img_corrplot
 
 # Construcción del grid
+
 fila1 <- plot_grid(f5a, f5b, ncol = 2, labels = "auto", rel_widths = c(1, 1.2))
 
 columna_c <- plot_grid(pt1, pt2, pt3, ncol = 1, labels = "c")

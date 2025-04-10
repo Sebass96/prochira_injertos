@@ -9,7 +9,7 @@ format:
     toc: false
     toc-title: Indice
     section-numbers: true
-    reference-doc: "files/style_3.docx"
+    reference-doc: "files/style_2.docx"
     output-file: "_manuscript"
 editor_options: 
   chunk_output_type: console
@@ -42,7 +42,7 @@ crossref:
 
 source("http://inkaverse.com/docs.r")
 doc <- inti::gdoc2qmd(file = "_draft.zip"
-                      , type = "listfull"
+                      # , type = "listfull"
                       )
 params <- doc$params
 ```
