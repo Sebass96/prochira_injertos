@@ -1,14 +1,101 @@
+**Boosting pea crop productivity: Insights into bio-inoculation and fertilization**
+
+Francisco Guevara-Fernández; Sebastian Casas-Niño; Milagros Munoz-Sals; Manuel Oliva-Cruz and Flavio Lozano-Isla
+
 ---
-format: md
-editor:
-  markdown:
-    wrap: 100
+
+## Manuscript
+
+> https://docs.google.com/document/d/1KkXUWwLrO3SjvIA030V4eGdkKDRuaVmwTeeE8EPtyB8/edit?usp=sharing
+
+## Database
+
+> https://docs.google.com/spreadsheets/d/1GgfIOmTGyvjtuVQzJgFA8ueD1yqRh7x7gyueLdQVd90/edit?usp=sharing
+
+## Presentation
+
+> Google Slides link
+
 ---
 
-# Impact of Interstock and Rootstock on the Vigor and Productive Development of Mango (*Mangifera indica* L.) in San Lorenzo Valley, Piura, Peru.
+⇒ SciHub: research pipeline repository
 
-## ABSTRACT
+project-root/
+  ├── analysis.qmd          # Script with data analysis (R/Python)
+  ├── article.qmd           # Script for formatting the article
+  ├── design/               # Experimental design and setup
+  │   ├── design.qmd            # Document with experimental setup and planning
+  │   └── labels.pdf            # Labels for experimental units or field trials
+  ├── files/                # Supporting files for the project
+  │   ├── images/               # Raw and processed images
+  │   ├── zotero/               # Zotero library (.rds)
+  │   └── template.docx         # Journal article template  
+  ├── manuscript/           # Core outputs of the article
+  │   ├── Figures               # Figures for the manuscript (.jpg & .eps)
+  │   ├── ESM                   # Electronic Supplementary Material (ESM)
+  │   └── draft.docx            # Manuscript text versions
+  └── README.qmd            # Article title with authors:
+                                # Manuscript link (Google Docs)
+                                # Database link (Google Sheets)
 
-The mango tree (*Mangifera indica* L.) is a fruit tree known for its vigorous growth. This crop is planted at low densities because of the space it requires during vegetative development, which has a significant effect on productivity per unit area. This research was conducted in the Piura region, Peru. The objective of this study was to determine the effects of the interaction between rootstock and interstock on the agronomic characteristics and fruit biometrics of mangoes. A total of 216 ten-year-old mango trees were evaluated and planted at a distance of 6.0 m × 6.0 m over an area of 1.25 ha during the agricultural season from 2017–2019. A randomized complete block design (RCBD) with a 2 × 4 factorial arrangement and three blocks was used. The first factor corresponded to the mango rootstock from the Chulucanas and Chato varieties, whereas the second factor included the interstock from the Chulucanas, Chato, Irwin, and Julie varieties. The results indicated that the variety of cultivars used affects plant growth; however, it does not influence the biometric characteristics of the fruits.
+---
 
-**Keywords:** agronomic performance; biometric characteristics; fruit yield; grafting techniques; El Niño
+⇒ Manuscript structure
+
+> Title Page / Cover page
+
+**TITLE**
+List of Authors
+Affiliations 
+Corresponding author
+Authors information
+
+| Author | ORCID | email |
+|--------|-------|-------|
+|        |       |       |
+|        |       |       |
+|        |       |       |
+
+STATEMENTS AND DECLARATIONS
+
+Acknowledgments
+Funding
+Conflict of interest
+Data availability
+Author contributions
+- CRediT
+
+> Article
+
+**TITLE**
+
+ABSTRACT
+
+Keywords: (alphabetical order)
+
+INTRODUCTION
+
+- Topic paragraphs
+- State of the art and research gaps
+- Objectives or hypothesis
+
+MATERIALS AND METHODS
+
+RESULTS
+
+- Title by research stages or objectives
+  - Motivation sentence (method justification: what/why/how)
+  - Result description
+
+DISCUSSION
+
+- Research summary
+- Title based on the objectives (*)
+- Description of the main results with cross references
+- Comparison with other research
+- Limitations and relevance
+- Perspectives and future steps (*)
+
+CONCLUSION
+
+REFERENCES

@@ -4,7 +4,7 @@
 
 **Impact of Interstock and Rootstock on the Growth and Productivity of Mango (*Mangifera indica* L.) in the San Lorenzo Valley, Peru**
 
-Sebastian Casas-Niño^1,2^; Sandy Vilchez-Navarro^1,3^; Henry Morocho-Romero^1,3^; Gabriela Cárdenas-Huamán^1,2^; Esdwin-Oberti Nuñez-Ticliahunca^1,3^; Ana Montañez-Artica^1^; Leslie Velarde-Apaza^1^; Max Ramirez Rojas^1^; Juan Carlos Rojas^1^; Flavio Lozano-Isla^1, 4\*^.
+Sebastian Casas-Niño^1,2^; Sandy Vilchez-Navarro^1,3^; Henry Morocho-Romero^1,3^; Gabriela Cárdenas-Huamán^1,2^; Esdwin-Oberti Nuñez-Ticliahunca^1,3^; Ana Montañez-Artica^1^; Leslie Velarde-Apaza^1^; Max Ramirez Rojas^1^; Juan Carlos Rojas^1^; Flavio Lozano-Isla^1,4\*^.
 
 *^1^ Dirección de Servicios Estratégicos Agrarios - Estación Experimental Agraria El Chira, Instituto Nacional de Innovación Agraria (INIA), Piura 20120, Perú.*
 
